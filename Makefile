@@ -26,8 +26,8 @@ MP_CFLAGS:=--shared -ldl -I./lib/libreborn -I./src/include
 
 all:
 	mkdir -p ./build/
-	gcc $(MCPIL_CFLAGS) ./src/mcpil.c -o ./build/mcpil
-	gcc $(MP_CFLAGS) ./src/multiplayer.c -o ./build/libmultiplayer.so
+	gcc -g -fPIC -pie ./src/mcpil.c -o ./build/mcpil $(MCPIL_CFLAGS)
+	gcc -fPIC -pie ./src/multiplayer.c -o ./build/libmultiplayer.so $(MP_CFLAGS)
 
 pack:
 	mkdir -p ./deb/

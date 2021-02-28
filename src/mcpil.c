@@ -541,7 +541,7 @@ TAB(Settings, "Settings", "Save", settings_cb, {
 	int i = 0;
 	int sz = 0;
 	int distance_int;
-	char* buff;
+	char* buff = NULL;
 	char* lf_ptrs[2];
 	char* default_username;
 	char* default_distance;
