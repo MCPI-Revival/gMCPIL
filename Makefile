@@ -24,9 +24,15 @@ ARCH:=$(shell uname -m | grep -Eo "arm|aarch|86")
 MCPIL_CFLAGS:=`pkg-config --libs --cflags gtk+-3.0` -I./src/include
 MP_CFLAGS:=--shared -ldl -I./lib/libreborn -I./src/include
 
+ifeq ($(DEBUG),true)
+	DEBUG_FLAGS:=-g
+else
+	DEBUG_FLAGS:=
+endif
+
 all:
 	mkdir -p ./build/
-	gcc -g -fPIC -pie ./src/mcpil.c -o ./build/mcpil $(MCPIL_CFLAGS)
+	gcc -fPIC -pie $(DEBUG_FLAGS) ./src/mcpil.c -o ./build/mcpil $(MCPIL_CFLAGS)
 	gcc -fPIC -pie ./src/multiplayer.c -o ./build/libmultiplayer.so $(MP_CFLAGS)
 
 pack:

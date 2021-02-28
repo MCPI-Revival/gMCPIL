@@ -435,6 +435,7 @@ TAB(Features, "Features", "Save", features_cb, {
 	features_envs[1] = (char*)malloc(1);
 	features_envs[2] = (char*)malloc(1);
 	features_envs[3] = (char*)malloc(1);
+	features_envs[4] = NULL;
 	while (i < featc)
 	{
 		set_feature_envs(i);
