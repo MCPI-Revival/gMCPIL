@@ -1,0 +1,6 @@
+# Builds
+build/
+
+# Debian
+mcpil_*-*.deb
+deb/
