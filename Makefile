@@ -50,14 +50,12 @@ pack:
 	@echo "Package: mcpil" > ./deb/DEBIAN/control
 	@echo "Version: 0.9.0-rc1" >> ./deb/DEBIAN/control
 	@echo "Priority: optional" >> ./deb/DEBIAN/control
-ifeq ($(ARCH),arm)
-	@echo "Architecture: armhf" >> ./deb/DEBIAN/control
-else ifeq ($(ARCH),86)
+ifeq ($(ARCH),86)
 	@echo "Architecture: i386" >> ./deb/DEBIAN/control
-else ifeq ($(ARCH),aarch)
-	@echo "Architecture: aarch64" >> ./deb/DEBIAN/control
+else
+	@echo "Architecture: armhf" >> ./deb/DEBIAN/control
 endif
-	@echo "Depends: minecraft-pi-reborn-native | minecraft-pi-reborn-virgl, libgtk-3-0" >> ./deb/DEBIAN/control
+	@echo "Depends: minecraft-pi-reborn-native | minecraft-pi-reborn-virgl | mcpirdl, libgtk-3-0" >> ./deb/DEBIAN/control
 	@echo "Maintainer: Alvarito050506 <donfrutosgomez@gmail.com>" >> ./deb/DEBIAN/control
 	@echo "Homepage: https://mcpi.tk" >> ./deb/DEBIAN/control
 	@echo "Vcs-Browser: https://github.com/MCPI-Revival/gMCPIL" >> ./deb/DEBIAN/control
