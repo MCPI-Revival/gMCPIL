@@ -315,14 +315,26 @@ void multiplayer_cb(GtkWidget* button, void* udata)
 	return;
 }
 
+void watch_cb(GPid pid, int status, void* udata)
+{
+	g_spawn_close_pid(pid);
+	return;
+}
+
 void launch_cb(GtkWidget* button, void* udata)
 {
-	if (fork() == 0)
+	char* argv[] = {"/usr/bin/minecraft-pi", NULL};
+	GPid pid;
+	GError* err = NULL;
+
+	g_spawn_async(NULL, argv, NULL, G_SPAWN_DO_NOT_REAP_CHILD, NULL, NULL, &pid, &err);
+
+	if (err != NULL)
 	{
-		setsid();
-		execl("/usr/bin/minecraft-pi", NULL);
 		return;
 	}
+
+	g_child_watch_add(pid, watch_cb, NULL);
 	return;
 }
 
@@ -735,6 +747,8 @@ int main(int argc, char* argv[])
 		close(libmultiplayer_fd[1]);
 	}
 	free(libmultiplayer_path);
+
+	gtk_init(&argc, &argv);
 
 	app = gtk_application_new("tk.mcpi.gmcpil", G_APPLICATION_FLAGS_NONE);
 
