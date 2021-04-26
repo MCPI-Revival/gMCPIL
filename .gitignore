@@ -2,5 +2,5 @@
 build/
 
 # Debian
-mcpil_*-*.deb
+gmcpil_*-*.deb
 deb/
