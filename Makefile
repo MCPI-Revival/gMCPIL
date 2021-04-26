@@ -60,7 +60,7 @@ endif
 	@echo "Homepage: https://mcpirevival.tk" >> ./deb/DEBIAN/control
 	@echo "Vcs-Browser: https://github.com/MCPI-Revival/gMCPIL" >> ./deb/DEBIAN/control
 	@echo "Vcs-Git: https://github.com/MCPI-Revival/gMCPIL.git" >> ./deb/DEBIAN/control
-	@echo "Description: Simple launcher for Minecraft: Pi Edition - GTK+ Edition.\n" >> ./deb/DEBIAN/control
+	@echo "Description: Minecraft Pi: Reborn Launcher written in C - GTK+ Edition.\n" >> ./deb/DEBIAN/control
 	dpkg-deb -b ./deb/ ./gmcpil_0.9.0-rc2.deb
 
 clean:
