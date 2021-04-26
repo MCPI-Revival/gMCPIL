@@ -47,7 +47,7 @@ pack:
 	cp ./CHANGELOG.txt ./deb/usr/share/doc/mcpil/
 	cp ./lib/Adwaita-dark.css ./deb/usr/share/mcpil/
 	sudo chmod a+x ./deb/usr/bin/mcpil
-	@echo "Package: mcpil" > ./deb/DEBIAN/control
+	@echo "Package: gmcpil" > ./deb/DEBIAN/control
 	@echo "Version: 0.9.0-rc2" >> ./deb/DEBIAN/control
 	@echo "Priority: optional" >> ./deb/DEBIAN/control
 ifeq ($(ARCH),86)
@@ -57,11 +57,11 @@ else
 endif
 	@echo "Depends: minecraft-pi-reborn-native | minecraft-pi-reborn-virgl | mcpirdl, libgtk-3-0" >> ./deb/DEBIAN/control
 	@echo "Maintainer: Alvarito050506 <donfrutosgomez@gmail.com>" >> ./deb/DEBIAN/control
-	@echo "Homepage: https://mcpi.tk" >> ./deb/DEBIAN/control
+	@echo "Homepage: https://mcpirevival.tk" >> ./deb/DEBIAN/control
 	@echo "Vcs-Browser: https://github.com/MCPI-Revival/gMCPIL" >> ./deb/DEBIAN/control
 	@echo "Vcs-Git: https://github.com/MCPI-Revival/gMCPIL.git" >> ./deb/DEBIAN/control
 	@echo "Description: Simple launcher for Minecraft: Pi Edition - GTK+ Edition.\n" >> ./deb/DEBIAN/control
-	dpkg-deb -b ./deb/ ./mcpil_0.9.0-rc2.deb
+	dpkg-deb -b ./deb/ ./gmcpil_0.9.0-rc2.deb
 
 clean:
 	rm -rf ./deb/
