@@ -48,7 +48,7 @@ pack:
 	cp ./lib/Adwaita-dark.css ./deb/usr/share/mcpil/
 	sudo chmod a+x ./deb/usr/bin/mcpil
 	@echo "Package: gmcpil" > ./deb/DEBIAN/control
-	@echo "Version: 0.9.0-rc3" >> ./deb/DEBIAN/control
+	@echo "Version: 0.9.0-rc4" >> ./deb/DEBIAN/control
 	@echo "Priority: optional" >> ./deb/DEBIAN/control
 ifeq ($(ARCH),86)
 	@echo "Architecture: i386" >> ./deb/DEBIAN/control
@@ -61,7 +61,7 @@ endif
 	@echo "Vcs-Browser: https://github.com/MCPI-Revival/gMCPIL" >> ./deb/DEBIAN/control
 	@echo "Vcs-Git: https://github.com/MCPI-Revival/gMCPIL.git" >> ./deb/DEBIAN/control
 	@echo "Description: Simple launcher for Minecraft: Pi Edition - GTK+ Edition.\n" >> ./deb/DEBIAN/control
-	dpkg-deb -b ./deb/ ./gmcpil_0.9.0-rc3.deb
+	dpkg-deb -b ./deb/ ./gmcpil_0.9.0-rc4.deb
 
 clean:
 	rm -rf ./deb/

@@ -56,13 +56,7 @@ char* distances[4] = {"Far", "Normal", "Short", "Tiny"};
 /* Helper functions */
 char* get_splash_text()
 {
-	int i = 0;
-
-	while (splashes[i] != NULL)
-	{
-		i++;
-	}
-	return splashes[rand() % i];
+	return splashes[rand() % sizeof(splashes) / sizeof(char*)];
 }
 
 int get_features()
@@ -217,6 +211,20 @@ int get_distance(char* str)
 		break;
 	}
 	return -1;
+}
+
+int check_libmultiplayer(char* path)
+{
+	struct stat attrs[2];
+
+    stat(path, &attrs[0]);
+    stat("/usr/lib/mcpil/libmultiplayer.so", &attrs[1]);
+
+    if (access(path, F_OK) != 0 || attrs[1].st_mtime >= attrs[0].st_mtime)
+    {
+		return 1;
+	}
+	return 0;
 }
 
 /* Callbacks */
@@ -736,7 +744,7 @@ int main(int argc, char* argv[])
 	srand(time(NULL));
 
 	asprintf(&libmultiplayer_path, "%s/.minecraft-pi/mods/libmultiplayer.so", getenv("HOME"));
-	if (access(libmultiplayer_path, F_OK) != 0)
+	if (check_libmultiplayer(libmultiplayer_path) != 0)
 	{
 		libmultiplayer_fd[0] = open("/usr/lib/mcpil/libmultiplayer.so", O_RDONLY, S_IRUSR | S_IRGRP);
 		sz = (int)lseek(libmultiplayer_fd[0], 0, SEEK_END);

@@ -68,8 +68,7 @@ char* splashes[] = {
 	"MCPI-Devs",
 	"RIP Picraft",
 	"Check out PBPT Anarchy!",
-	"Now without Docker!",
-	NULL
+	"Now without Docker!"
 };
 
 #endif /* SPLASHES_H */

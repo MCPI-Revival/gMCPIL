@@ -39,30 +39,38 @@
 #include <netdb.h>
 
 #include <libreborn.h>
+#include <servers.h>
 
-int mp_port;
 char* buff;
-char* mp_ip;
 
-int build_sockaddr(struct sockaddr_in* dst_addr, char* ip, int port)
+int build_sockaddr(server_t* server)
 {
-	struct hostent* host = gethostbyname(ip);
-	if (host == NULL)
+	struct hostent* host;
+	struct sockaddr_in* addr_in;
+
+	addr_in = (struct sockaddr_in*)&server->addr;
+	if (server == NULL || server->ip == NULL || server->port == 0)
 	{
 		return -1;
 	}
-	memcpy(&dst_addr->sin_addr, host->h_addr_list[0], host->h_length);
-	dst_addr->sin_family = AF_INET;
-	dst_addr->sin_port = htons(port);
+
+	host = gethostbyname(server->ip);
+	if (host == NULL)
+	{
+		return -2;
+	}
+
+	memcpy(&addr_in->sin_addr, host->h_addr_list[0], host->h_length);
+	addr_in->sin_family = AF_INET;
+	addr_in->sin_port = htons(server->port);
 	return 0;
 }
 
-/* Extends port search (19132-19139) and address search (mp_ip:mp_port). */
+/* Extends port search (19132-19139) and address search (servers->ip:servers->port). */
 HOOK(sendto, ssize_t, (int sockfd, const void* buf, size_t len, int flags, const struct sockaddr* dest_addr, socklen_t addrlen))
 {
 	int i = 19136;
 	struct sockaddr_in* addr = (struct sockaddr_in*)dest_addr;
-	struct sockaddr tmp_addr;
 
 	ensure_sendto();
 	if (addr->sin_addr.s_addr == -1 && ntohs(addr->sin_port) == 19135)
@@ -76,12 +84,14 @@ HOOK(sendto, ssize_t, (int sockfd, const void* buf, size_t len, int flags, const
 			}
 			i++;
 		}
-		if (build_sockaddr((struct sockaddr_in*)&tmp_addr, mp_ip, mp_port) == 0)
+		i = 0;
+		while (i < (sizeof(servers) / sizeof(server_t)))
 		{
-			if ((*real_sendto)(sockfd, buf, len, flags, &tmp_addr, addrlen) < 0)
+			if ((*real_sendto)(sockfd, buf, len, flags, &servers[i].addr, (socklen_t)(sizeof(servers[i].addr))) < 0)
 			{
 				fprintf(stderr, "sendto failed with exit errno %i\n", errno);
 			}
+			i++;
 		}
 		addr->sin_port = htons(19135);
 	}
@@ -90,6 +100,7 @@ HOOK(sendto, ssize_t, (int sockfd, const void* buf, size_t len, int flags, const
 
 void __attribute__((constructor)) init()
 {
+	int i = 1;
 	int sz = 0;
 	char* lf_ptr;
 	char* slash_ptr;
@@ -98,12 +109,16 @@ void __attribute__((constructor)) init()
 
 	asprintf(&servers_path, "%s/.minecraft-pi/servers.txt", getenv("HOME"));
 
-	servers_file = fopen(servers_path, "r");
+	while (i < (sizeof(servers) / sizeof(server_t)))
+	{
+		build_sockaddr(&servers[i]);
+		i++;
+	}
 
+	servers_file = fopen(servers_path, "r");
 	if (servers_file == NULL)
 	{
-		free(servers_path);
-		return;
+		goto err;
 	}
 
 	fseek(servers_file, 0, SEEK_END);
@@ -111,22 +126,34 @@ void __attribute__((constructor)) init()
 	fseek(servers_file, 0, SEEK_SET);
 
 	buff = (char*)malloc(sz);
+	if (buff == NULL)
+	{
+		goto err;
+	}
 	fread((void*)buff, 1, sz, servers_file);
+	buff[sz] = 0x00;
 
 	lf_ptr = strchr(buff, '\n');
 	slash_ptr = strchr(buff, '/');
 	if (lf_ptr == NULL || slash_ptr == NULL)
 	{
-		free(servers_path);
 		free(buff);
-		return;
+		goto err;
 	}
 	*lf_ptr = 0x00;
 	*slash_ptr = 0x00;
 
-	mp_port = atoi(slash_ptr + 1);
-	mp_ip = buff;
+	servers[0].port = (short)strtol(slash_ptr + 1, NULL, 10);
+	servers[0].ip = buff;
 
+	goto end;
+
+err:
+	servers[0].port = 0;
+	servers[0].ip = NULL;
+
+end:
+	build_sockaddr(&servers[0]);
 	free(servers_path);
 	return;
 }
