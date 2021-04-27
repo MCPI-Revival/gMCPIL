@@ -44,7 +44,7 @@ char* splashes[] = {
 	"I was promised pie!",
 	"@Banana",
 	"BANANA!",
-	"To \"Na\" Or Not To \"Na\", that is the question!"
+	"To \"Na\" Or Not To \"Na\", that is the question!",
 	"Not Minecraft Java!",
 	"Definitely not Minecraft Console!",
 	"Oh yeah, that version...",
@@ -66,7 +66,7 @@ char* splashes[] = {
 	"Minceraft",
 	"MCPI-Docker",
 	"MCPI-Devs",
-	"RIP PiCraft",
+	"RIP Picraft",
 	"Check out PBPT Anarchy!",
 	"Now without Docker!",
 	NULL
