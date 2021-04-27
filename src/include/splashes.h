@@ -68,7 +68,6 @@ char* splashes[] = {
 	"MCPI-Devs",
 	"RIP PiCraft",
 	"Check out PBPT Anarchy!",
-	"Check out pi-apps!,
 	"Now without Docker!",
 	NULL
 };
