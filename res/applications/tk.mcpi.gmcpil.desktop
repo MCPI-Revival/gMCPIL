@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=gMCPIL
+Comment=Minecraft Pi Launcher
+Exec=mcpil
+Icon=mcpil
+Terminal=false
+Type=Application
+Categories=Application;Game;
+StartupNotify=true
+GenericName=Minecraft Pi Launcher

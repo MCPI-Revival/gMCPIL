@@ -56,6 +56,7 @@ pack: mcpil
 	cp ./build/libmultiplayer.so ./deb/usr/lib/mcpil/
 	cp ./CHANGELOG.txt ./deb/usr/share/doc/mcpil/
 	cp ./lib/Adwaita-dark.css ./deb/usr/share/mcpil/
+	cp -r ./res/. ./deb/usr/share/
 	sudo chmod a+x ./deb/usr/bin/mcpil
 	@echo "Package: gmcpil" > ./deb/DEBIAN/control
 	@echo "Version: $(VERSION)" >> ./deb/DEBIAN/control
