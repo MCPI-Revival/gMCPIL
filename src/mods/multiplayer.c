@@ -41,7 +41,7 @@
 #include <libreborn.h>
 #include <servers.h>
 
-char* buff;
+char* buff = NULL;
 
 int build_sockaddr(server_t* server)
 {
@@ -151,6 +151,7 @@ void __attribute__((constructor)) init()
 err:
 	servers[0].port = 0;
 	servers[0].ip = NULL;
+	buff = NULL;
 
 end:
 	build_sockaddr(&servers[0]);
@@ -160,6 +161,9 @@ end:
 
 void __attribute__((destructor)) destroy()
 {
-	free(buff);
+	if (buff != NULL)
+	{
+		free(buff);
+	}
 	return;
 }

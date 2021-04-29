@@ -20,23 +20,33 @@
 #  
 #  
 
+CC:=gcc
 ARCH:=$(shell uname -m | grep -Eo "arm|aarch|86")
-MCPIL_CFLAGS:=`pkg-config --libs --cflags gtk+-3.0` -I./src/include
-MP_CFLAGS:=--shared -ldl -I./lib/libreborn -I./src/include
 
-ifeq ($(DEBUG),true)
-	DEBUG_FLAGS:=-g
-else
-	DEBUG_FLAGS:=
-endif
+OBJS:=$(patsubst %,build/%.o,mcpil helpers callbacks tabs)
+MODS:=$(patsubst %,build/lib%.so,multiplayer)
 
-all:
+CFLAGS:=-I./src/include
+GTK_CONFIG:=`pkg-config --libs --cflags gtk+-3.0`
+MOD_CONFIG:=--shared -ldl -I./lib/libreborn
+
+VERSION:=0.9.0-rc4
+
+.PHONY: mkdir
+
+mcpil: mkdir $(MODS) $(OBJS)
+	$(CC) -fPIC -fpie $(OBJS) -o ./build/mcpil $(GTK_CONFIG) $(CFLAGS)
+
+./build/%.o: ./src/%.c ./src/include/*.h
+	$(CC) -c $< -o $@ $(GTK_CONFIG) $(CFLAGS)
+
+./build/lib%.so: ./src/mods/%.c
+	$(CC) $< -o $@ $(MOD_CONFIG) $(CFLAGS)
+
+mkdir:
 	mkdir -p ./build/
-	gcc -fPIC -pie $(DEBUG_FLAGS) ./src/mcpil.c -o ./build/mcpil $(MCPIL_CFLAGS)
-	gcc -fPIC -pie ./src/multiplayer.c -o ./build/libmultiplayer.so $(MP_CFLAGS)
 
-pack:
-	mkdir -p ./deb/
+pack: mcpil
 	mkdir -p ./deb/DEBIAN/
 	mkdir -p ./deb/usr/bin/
 	mkdir -p ./deb/usr/share/mcpil/
@@ -48,7 +58,7 @@ pack:
 	cp ./lib/Adwaita-dark.css ./deb/usr/share/mcpil/
 	sudo chmod a+x ./deb/usr/bin/mcpil
 	@echo "Package: gmcpil" > ./deb/DEBIAN/control
-	@echo "Version: 0.9.0-rc4" >> ./deb/DEBIAN/control
+	@echo "Version: $(VERSION)" >> ./deb/DEBIAN/control
 	@echo "Priority: optional" >> ./deb/DEBIAN/control
 ifeq ($(ARCH),86)
 	@echo "Architecture: i386" >> ./deb/DEBIAN/control
@@ -61,9 +71,9 @@ endif
 	@echo "Vcs-Browser: https://github.com/MCPI-Revival/gMCPIL" >> ./deb/DEBIAN/control
 	@echo "Vcs-Git: https://github.com/MCPI-Revival/gMCPIL.git" >> ./deb/DEBIAN/control
 	@echo "Description: Simple launcher for Minecraft: Pi Edition - GTK+ Edition.\n" >> ./deb/DEBIAN/control
-	dpkg-deb -b ./deb/ ./gmcpil_0.9.0-rc4.deb
+	dpkg-deb -b ./deb/ ./gmcpil_$(VERSION).deb
 
 clean:
 	rm -rf ./deb/
 	rm -rf ./build/
-	rm -f ./mcpil_*-*.deb
+	rm ./gmcpil_*-*.deb

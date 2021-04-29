@@ -60,6 +60,8 @@
 }
 
 #define MCPIL_REPO_URL "https://github.com/MCPI-Revival/gMCPIL"
+#define MCPIL_FEATURED_NOTICE "<b>Note:</b> TBR's and PBPT servers are now featured servers,\n" \
+	"this means you don't need to add them here to be able to join."
 
 typedef void* feature_t[2];
 
@@ -105,11 +107,22 @@ void settings_cb(GtkWidget* button, void* udata);
 /* About */
 void about_cb(GtkWidget* button, void* udata);
 
+/* Misc/App */
+int check_libmultiplayer(char* path);
+void activate_cb(GtkApplication* app, void* udata);
+
 /* Tabs */
 GtkWidget* Play_tab(GtkWidget* notebook);
 GtkWidget* Features_tab(GtkWidget* notebook);
 GtkWidget* Multiplayer_tab(GtkWidget* notebook);
 GtkWidget* Settings_tab(GtkWidget* notebook);
 GtkWidget* About_tab(GtkWidget* notebook);
+
+/* Variable declarations */
+GtkWidget* window;
+char* profile_names[5];
+char* profile_descriptions[5];
+char* features_envs[5];
+char* distances[4];
 
 #endif /* MCPIL_H */

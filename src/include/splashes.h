@@ -27,7 +27,10 @@
 
 #include <stdlib.h>
 
-char* splashes[] = {
+char* splashes[41];
+
+#ifdef DEFINE_SPLASHES
+char* splashes[41] = {
 	"Sexy!",
 	"We Fixed The Rail!",
 	"Who Broke The Rail?",
@@ -70,5 +73,6 @@ char* splashes[] = {
 	"Check out PBPT Anarchy!",
 	"Now without Docker!"
 };
+#endif /* DEFINE_SPLASHES */
 
 #endif /* SPLASHES_H */
