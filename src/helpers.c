@@ -29,6 +29,7 @@
 #include <sys/stat.h>
 
 #include <mcpil.h>
+#include <config.h>
 #include <splashes.h>
 
 /* Helper functions */
@@ -41,7 +42,6 @@ int get_features()
 {
 	int i = 0;
 	int sz = 0;
-	int line = 0;
 	int offset = 0;
 	size_t buff_sz;
 	char* buff;
@@ -125,50 +125,6 @@ feature_t* get_feature(char* str)
 		i++;
 	}
 	return NULL;
-}
-
-int get_servers(char** ip, char** port)
-{
-	int sz = 0;
-	char* lf_ptr;
-	char* slash_ptr;
-	char* servers_path;
-	FILE* servers_file;
-
-	asprintf(&servers_path, "%s/.minecraft-pi/servers.txt", getenv("HOME"));
-
-	servers_file = fopen(servers_path, "r");
-
-	if (servers_file == NULL)
-	{
-		free(servers_path);
-		return -1;
-	}
-
-	fseek(servers_file, 0, SEEK_END);
-	sz = ftell(servers_file);
-	fseek(servers_file, 0, SEEK_SET);
-
-	multiplayer.buff = (char*)malloc(sz + 1);
-	fread((void*)multiplayer.buff, 1, sz, servers_file);
-
-	lf_ptr = strchr(multiplayer.buff, '\n');
-	slash_ptr = strchr(multiplayer.buff, '/');
-	if (lf_ptr == NULL || slash_ptr == NULL)
-	{
-		free(servers_path);
-		free(multiplayer.buff);
-		return -2;
-	}
-	*lf_ptr = 0x00;
-	*slash_ptr = 0x00;
-
-	*ip = multiplayer.buff;
-	*port = slash_ptr + 1;
-
-	fclose(servers_file);
-	free(servers_path);
-	return 0;
 }
 
 int get_distance(char* str)

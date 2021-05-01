@@ -23,10 +23,10 @@
 CC:=gcc
 ARCH:=$(shell uname -m | grep -Eo "arm|aarch|86")
 
-OBJS:=$(patsubst %,build/%.o,mcpil helpers callbacks tabs)
+OBJS:=$(patsubst %,build/%.o,mcpil config helpers callbacks tabs)
 MODS:=$(patsubst %,build/lib%.so,multiplayer)
 
-CFLAGS:=-I./src/include
+CFLAGS:=-I./src/include -Wall `pkg-config --libs --cflags json-glib-1.0`
 GTK_CONFIG:=`pkg-config --libs --cflags gtk+-3.0`
 MOD_CONFIG:=--shared -ldl -I./lib/libreborn
 
@@ -34,14 +34,14 @@ VERSION:=0.9.0-rc4
 
 .PHONY: mkdir
 
-mcpil: mkdir $(MODS) $(OBJS)
+mcpil: mkdir $(OBJS) $(MODS)
 	$(CC) -fPIC -fpie $(OBJS) -o ./build/mcpil $(GTK_CONFIG) $(CFLAGS)
 
 ./build/%.o: ./src/%.c ./src/include/*.h
 	$(CC) -c $< -o $@ $(GTK_CONFIG) $(CFLAGS)
 
 ./build/lib%.so: ./src/mods/%.c
-	$(CC) $< -o $@ $(MOD_CONFIG) $(CFLAGS)
+	$(CC) ./build/config.o $< -o $@ $(MOD_CONFIG) $(CFLAGS)
 
 mkdir:
 	mkdir -p ./build/
@@ -50,11 +50,9 @@ pack: mcpil
 	mkdir -p ./deb/DEBIAN/
 	mkdir -p ./deb/usr/bin/
 	mkdir -p ./deb/usr/share/mcpil/
-	mkdir -p ./deb/usr/share/doc/mcpil/
 	mkdir -p ./deb/usr/lib/mcpil/
 	cp ./build/mcpil ./deb/usr/bin/
-	cp ./build/libmultiplayer.so ./deb/usr/lib/mcpil/
-	cp ./CHANGELOG.txt ./deb/usr/share/doc/mcpil/
+	cp ./build/lib*.so ./deb/usr/lib/mcpil/
 	cp ./lib/Adwaita-dark.css ./deb/usr/share/mcpil/
 	cp -r ./res/. ./deb/usr/share/
 	sudo chmod a+x ./deb/usr/bin/mcpil
@@ -66,7 +64,7 @@ ifeq ($(ARCH),86)
 else
 	@echo "Architecture: armhf" >> ./deb/DEBIAN/control
 endif
-	@echo "Depends: minecraft-pi-reborn-native | minecraft-pi-reborn-virgl | mcpirdl, libgtk-3-0" >> ./deb/DEBIAN/control
+	@echo "Depends: minecraft-pi-reborn-native | minecraft-pi-reborn-virgl | mcpirdl, libgtk-3-0, libjson-glib-1.0-0" >> ./deb/DEBIAN/control
 	@echo "Maintainer: Alvarito050506 <donfrutosgomez@gmail.com>" >> ./deb/DEBIAN/control
 	@echo "Homepage: https://mcpirevival.tk" >> ./deb/DEBIAN/control
 	@echo "Vcs-Browser: https://github.com/MCPI-Revival/gMCPIL" >> ./deb/DEBIAN/control

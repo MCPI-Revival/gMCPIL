@@ -1,5 +1,5 @@
 /*
- * mcpil.c - MCPIL GTK+ PoC/Edition
+ * mcpil.c - MCPIL GTK+ Edition
  * 
  * Copyright 2021 Alvarito050506 <donfrutosgomez@gmail.com>
  * 
@@ -34,6 +34,7 @@
 
 #include <gtk/gtk.h>
 #include <mcpil.h>
+#include <config.h>
 #include <splashes.h>
 
 /* Widget variables */
@@ -60,6 +61,7 @@ int main(int argc, char* argv[])
 	int status = 0;
 	int libmultiplayer_fd[2];
 	char* libmultiplayer_path;
+	char* config_path;
 	GtkApplication* app;
 
 	/* Initialize */
@@ -77,6 +79,10 @@ int main(int argc, char* argv[])
 		close(libmultiplayer_fd[1]);
 	}
 	free(libmultiplayer_path);
+
+	asprintf(&config_path, "%s/.minecraft-pi/gmcpil.json", getenv("HOME"));
+	config = mcpil_config_new(config_path);
+	free(config_path);
 
 	gtk_init(&argc, &argv);
 
@@ -98,9 +104,11 @@ int main(int argc, char* argv[])
 		free(FEAT_PTR(i));
 		i++;
 	}
-	if (multiplayer.buff != NULL)
+	if (settings_box.buff != NULL)
 	{
-		free(multiplayer.buff);
+		free(settings_box.buff);
 	}
+	mcpil_config_save(config);
+	g_object_unref(config);
 	return 0;
 }

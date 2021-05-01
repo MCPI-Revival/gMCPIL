@@ -40,6 +40,7 @@
 
 #include <libreborn.h>
 #include <servers.h>
+#include <config.h>
 
 char* buff = NULL;
 
@@ -101,13 +102,12 @@ HOOK(sendto, ssize_t, (int sockfd, const void* buf, size_t len, int flags, const
 void __attribute__((constructor)) init()
 {
 	int i = 1;
-	int sz = 0;
-	char* lf_ptr;
-	char* slash_ptr;
-	char* servers_path;
-	FILE* servers_file;
+	char* config_path;
+	MCPILConfig* config;
 
-	asprintf(&servers_path, "%s/.minecraft-pi/servers.txt", getenv("HOME"));
+	asprintf(&config_path, "%s/.minecraft-pi/gmcpil.json", getenv("HOME"));
+	config = mcpil_config_new(config_path);
+	free(config_path);
 
 	while (i < (sizeof(servers) / sizeof(server_t)))
 	{
@@ -115,47 +115,11 @@ void __attribute__((constructor)) init()
 		i++;
 	}
 
-	servers_file = fopen(servers_path, "r");
-	if (servers_file == NULL)
-	{
-		goto err;
-	}
+	servers[0].port = (short)strtol(mcpil_config_get_port(config), NULL, 10);
+	servers[0].ip = mcpil_config_get_ip(config);
 
-	fseek(servers_file, 0, SEEK_END);
-	sz = ftell(servers_file);
-	fseek(servers_file, 0, SEEK_SET);
-
-	buff = (char*)malloc(sz);
-	if (buff == NULL)
-	{
-		goto err;
-	}
-	fread((void*)buff, 1, sz, servers_file);
-	buff[sz] = 0x00;
-
-	lf_ptr = strchr(buff, '\n');
-	slash_ptr = strchr(buff, '/');
-	if (lf_ptr == NULL || slash_ptr == NULL)
-	{
-		free(buff);
-		goto err;
-	}
-	*lf_ptr = 0x00;
-	*slash_ptr = 0x00;
-
-	servers[0].port = (short)strtol(slash_ptr + 1, NULL, 10);
-	servers[0].ip = buff;
-
-	goto end;
-
-err:
-	servers[0].port = 0;
-	servers[0].ip = NULL;
-	buff = NULL;
-
-end:
 	build_sockaddr(&servers[0]);
-	free(servers_path);
+	g_object_unref(config);
 	return;
 }
 

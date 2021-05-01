@@ -29,6 +29,7 @@
 #include <sys/stat.h>
 
 #include <mcpil.h>
+#include <config.h>
 #include <splashes.h>
 
 /* Callbacks */
@@ -38,8 +39,6 @@ void features_cb(GtkWidget* button, void* udata)
 	int sz = 1;
 	int len = 0;
 	int tmp = 0;
-	char* features_path;
-	FILE* features_file;
 
 	if (features_envs[4] != NULL)
 	{
@@ -70,14 +69,8 @@ void features_cb(GtkWidget* button, void* udata)
 
 	if ((int)udata == TRUE)
 	{
-		asprintf(&features_path, "%s/.minecraft-pi/profile.txt", getenv("HOME"));
-		features_file = fopen(features_path, "w");
-		if (features_file != NULL)
-		{
-			fwrite((const void*)features_envs[4], 1, sz - 2, features_file);
-			fclose(features_file);
-		}
-		free(features_path);
+		mcpil_config_set_features(config, features_envs[4]);
+		mcpil_config_save(config);
 	}
 	return;
 }
@@ -92,17 +85,13 @@ void toggle_cb(GtkWidget* check, void* udata)
 
 void multiplayer_cb(GtkWidget* button, void* udata)
 {
-	int pid;
-	char* ip_port;
-	char* servers_path;
 	const char* ip;
 	const char* port;
-	FILE* servers_file;
 	GtkEntryBuffer* ip_buff;
 	GtkEntryBuffer* port_buff;
 
-	ip_buff = gtk_entry_get_buffer(GTK_ENTRY(multiplayer.ip_entry));
-	port_buff = gtk_entry_get_buffer(GTK_ENTRY(multiplayer.port_entry));
+	ip_buff = gtk_entry_get_buffer(GTK_ENTRY(settings_box.ip_entry));
+	port_buff = gtk_entry_get_buffer(GTK_ENTRY(settings_box.port_entry));
 	ip = gtk_entry_buffer_get_text(ip_buff);
 	port = gtk_entry_buffer_get_text(port_buff);
 
@@ -111,19 +100,9 @@ void multiplayer_cb(GtkWidget* button, void* udata)
 		return;
 	}
 
-	asprintf(&ip_port, "%s/%s\n", ip, port);
-	asprintf(&servers_path, "%s/.minecraft-pi/servers.txt", getenv("HOME"));
-
-	servers_file = fopen(servers_path, "w");
-	if (servers_file == NULL)
-	{
-		free(servers_path);
-		return;
-	}
-
-	fwrite((const void*)ip_port, 1, strlen(ip_port), servers_file);
-	fclose(servers_file);
-	free(ip_port);
+	mcpil_config_set_ip(config, ip);
+	mcpil_config_set_port(config, port);
+	mcpil_config_save(config);
 	return;
 }
 
@@ -163,29 +142,21 @@ void select_cb(GtkWidget* list, GtkListBoxRow* row, void* udata)
 
 void settings_cb(GtkWidget* button, void* udata)
 {
-	char* buff;
 	const char* username;
 	const char* distance;
-	char* settings_path;
-	FILE* settings_file;
 	GtkEntryBuffer* gtk_buff;
 
-	gtk_buff = gtk_entry_get_buffer(GTK_ENTRY(settings.username_entry));
+	gtk_buff = gtk_entry_get_buffer(GTK_ENTRY(settings_box.username_entry));
 
 	username = gtk_entry_buffer_get_text(gtk_buff);
-	distance = gtk_combo_box_text_get_active_text(settings.distance_combo);
-
-	asprintf(&settings_path, "%s/.minecraft-pi/settings.txt", getenv("HOME"));
-	asprintf(&buff, "%s\n%s\n", username, distance);
-
-	settings_file = fopen(settings_path, "w");
-	fwrite((const void*)buff, 1, strlen(buff), settings_file);
+	distance = gtk_combo_box_text_get_active_text(settings_box.distance_combo);
 
 	setenv("MCPI_USERNAME", username, 1);
 	setenv("MCPI_RENDER_DISTANCE", distance, 1);
-	fclose(settings_file);
-	free(settings_path);
-	free(buff);
+
+	mcpil_config_set_username(config, username);
+	mcpil_config_set_distance(config, distance);
+	mcpil_config_save(config);
 	return;
 }
 

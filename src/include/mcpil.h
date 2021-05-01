@@ -25,6 +25,7 @@
 #define MCPIL_H
 
 #include <gtk/gtk.h>
+#include <config.h>
 
 #define MCPIL_MAJOR 0
 #define MCPIL_MINOR 9
@@ -65,22 +66,18 @@
 
 typedef void* feature_t[2];
 
-typedef struct multiplayer_t
+typedef struct settings_box_t
 {
 	GtkWidget* ip_entry;
 	GtkWidget* port_entry;
-	char* buff;
-} multiplayer_t;
-
-typedef struct settings_t
-{
 	GtkEntry* username_entry;
 	GtkComboBoxText* distance_combo;
-} settings_t;
+	char* buff;
+} settings_box_t;
 
 feature_t features[24];
-multiplayer_t multiplayer;
-settings_t settings;
+settings_box_t settings_box;
+MCPILConfig* config;
 
 int featc;
 
