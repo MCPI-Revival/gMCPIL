@@ -22,9 +22,9 @@
  + [MCPI-Reborn](https://gitea.thebrokenrail.com/TheBrokenRail/minecraft-pi-reborn)
 
 ### Installation
-You can install gMCPIL from [mcpi-repo](https://github.com/MCPI-Revival/mcpi-repo):
+You can install gMCPIL from our APT repo, [mcpi-packages](https://github.com/MCPI-Revival/mcpi-packages):
 ```
-# If you didn't install mcpi-repo yet
+# If you didn't install mcpi-packages yet
 wget -qO- https://raw.githubusercontent.com/MCPI-Revival/mcpi-packages/master/install.sh | bash
 
 # Actual gMCPIL installation
