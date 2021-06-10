@@ -1,6 +1,0 @@
-v0.9.0:
- + Rewritten in C.
- + Rewritten interface in GTK.
- + Added proxy-free multiplayer.
- + Added "Featured servers".
-

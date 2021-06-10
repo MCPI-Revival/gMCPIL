@@ -1,5 +1,5 @@
 /*
- * mcpil.c - MCPIL GTK+ PoC/Edition
+ * mcpil.c - MCPIL GTK+ Edition
  * 
  * Copyright 2021 Alvarito050506 <donfrutosgomez@gmail.com>
  * 
@@ -34,6 +34,7 @@
 
 #include <gtk/gtk.h>
 #include <mcpil.h>
+#include <config.h>
 #include <splashes.h>
 
 /* Widget variables */
@@ -56,36 +57,26 @@ char* distances[4] = {"Far", "Normal", "Short", "Tiny"};
 int main(int argc, char* argv[])
 {
 	int i = 0;
-	int sz = 0;
-	int status = 0;
-	int libmultiplayer_fd[2];
-	char* libmultiplayer_path;
+	int rt = 0;
+	char* config_path;
 	GtkApplication* app;
 
 	/* Initialize */
 	srand(time(NULL));
+	setenv("LD_PRELOAD", "/usr/lib/gmcpil/libmultiplayer.so", 1);
 
-	asprintf(&libmultiplayer_path, "%s/.minecraft-pi/mods/libmultiplayer.so", getenv("HOME"));
-	if (check_libmultiplayer(libmultiplayer_path) != 0)
-	{
-		libmultiplayer_fd[0] = open("/usr/lib/mcpil/libmultiplayer.so", O_RDONLY, S_IRUSR | S_IRGRP);
-		sz = (int)lseek(libmultiplayer_fd[0], 0, SEEK_END);
-		lseek(libmultiplayer_fd[0], 0, SEEK_SET);
-		libmultiplayer_fd[1] = open(libmultiplayer_path, O_WRONLY | O_CREAT, S_IRWXU);
-		sendfile(libmultiplayer_fd[1], libmultiplayer_fd[0], NULL, sz);
-		close(libmultiplayer_fd[0]);
-		close(libmultiplayer_fd[1]);
-	}
-	free(libmultiplayer_path);
+	asprintf(&config_path, "%s/.minecraft-pi/gmcpil.json", getenv("HOME"));
+	config = mcpil_config_new(config_path);
+	free(config_path);
 
 	gtk_init(&argc, &argv);
 
-	app = gtk_application_new("tk.mcpi.gmcpil", G_APPLICATION_FLAGS_NONE);
+	app = gtk_application_new("tk.mcpirevival.gmcpil", G_APPLICATION_FLAGS_NONE);
 
 	/* Signals */
 	g_signal_connect(app, "activate", G_CALLBACK(activate_cb), NULL);
 
-	status = g_application_run(G_APPLICATION(app), argc, argv);
+	rt = g_application_run(G_APPLICATION(app), argc, argv);
 
 	/* Free memory and resources */
 	g_object_unref(app);
@@ -98,9 +89,12 @@ int main(int argc, char* argv[])
 		free(FEAT_PTR(i));
 		i++;
 	}
-	if (multiplayer.buff != NULL)
+	if (settings_box.buff != NULL)
 	{
-		free(multiplayer.buff);
+		free(settings_box.buff);
 	}
-	return 0;
+
+	mcpil_config_save(config);
+	g_object_unref(config);
+	return rt;
 }

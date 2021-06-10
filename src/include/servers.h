@@ -27,7 +27,8 @@
 #include <stdlib.h>
 #include <sys/socket.h>
 
-typedef struct server_t {
+typedef struct server_t
+{
 	char* ip;
 	unsigned short port;
 	struct sockaddr addr;

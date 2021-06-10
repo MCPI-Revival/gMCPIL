@@ -29,11 +29,13 @@
 #include <sys/stat.h>
 
 #include <mcpil.h>
+#include <config.h>
 #include <splashes.h>
 
 /* Tabs */
 TAB(Play, "Minecraft Pi Launcher", "Launch", launch_cb, {
 	int i = 0;
+	int last_profile;
 	char* splash_text;
 	GtkWidget* list;
 	GtkWidget* rows[5];
@@ -58,6 +60,7 @@ TAB(Play, "Minecraft Pi Launcher", "Launch", launch_cb, {
 	gtk_label_set_justify(GTK_LABEL(description), GTK_JUSTIFY_CENTER);
 	gtk_label_set_line_wrap(GTK_LABEL(description), TRUE);
 
+	last_profile = SAFE_ATOI(mcpil_config_get_last_profile(config));
 	while (i < 5)
 	{
 		rows[i] = gtk_list_box_row_new();
@@ -67,9 +70,11 @@ TAB(Play, "Minecraft Pi Launcher", "Launch", launch_cb, {
 		gtk_container_add(GTK_CONTAINER(list), rows[i]);
 		i++;
 	}
+	gtk_list_box_select_row(GTK_LIST_BOX(list), GTK_LIST_BOX_ROW(rows[last_profile]));
+	gtk_label_set_text(GTK_LABEL(description), profile_descriptions[last_profile]);
 
 	g_signal_connect(list, "row-selected", G_CALLBACK(select_cb), (void*)description);
-	gtk_list_box_select_row(GTK_LIST_BOX(list), GTK_LIST_BOX_ROW(rows[0]));
+
 	gtk_box_pack_start(GTK_BOX(hbox), list, FALSE, FALSE, 6);
 	gtk_box_pack_start(GTK_BOX(hbox), description, TRUE, TRUE, 0);
 	gtk_box_pack_start(GTK_BOX(tab), hbox, TRUE, FALSE, 0);
@@ -80,11 +85,9 @@ TAB(Play, "Minecraft Pi Launcher", "Launch", launch_cb, {
 
 TAB(Features, "Features", "Save", features_cb, {
 	int i = 0;
-	int sz = 0;
+	int last_profile;
 	char* tmp;
-	char* buff;
-	char* features_path;
-	FILE* features_file;
+	char* features_buff;
 	GtkWidget* feature_check;
 	feature_t* feature;
 
@@ -101,17 +104,9 @@ TAB(Features, "Features", "Save", features_cb, {
 		i++;
 	}
 
-	asprintf(&features_path, "%s/.minecraft-pi/profile.txt", getenv("HOME"));
-	features_file = fopen(features_path, "r");
-	if (features_file != NULL)
+	features_buff = mcpil_config_get_features(config);
+	if (features_buff != NULL)
 	{
-		fseek(features_file, 0, SEEK_END);
-		sz = ftell(features_file);
-		fseek(features_file, 0, SEEK_SET);
-
-		buff = (char*)malloc(sz + 1);
-		fread((void*)buff, 1, sz, features_file);
-		fclose(features_file);
 		i = 0;
 		while (i < featc)
 		{
@@ -120,7 +115,7 @@ TAB(Features, "Features", "Save", features_cb, {
 		}
 
 		i = 0;
-		tmp = strtok(buff, "|");
+		tmp = strtok(features_buff, "|");
 		while (tmp != NULL && i < featc)
 		{
 			feature = get_feature(tmp);
@@ -145,16 +140,17 @@ TAB(Features, "Features", "Save", features_cb, {
 		gtk_box_pack_start(GTK_BOX(tab), feature_check, FALSE, FALSE, 0);
 		i++;
 	}
-	free(features_path);
 
 	features_cb(NULL, (void*)FALSE);
 	cb_udata = (void*)TRUE;
+	mcpil_config_set_features(config, features_envs[4]);
+	last_profile = SAFE_ATOI(mcpil_config_get_last_profile(config));
+	setenv("MCPI_FEATURE_FLAGS", features_envs[last_profile], 1);
 });
 
 TAB(Multiplayer, "Multiplayer", "Save", multiplayer_cb, {
 	char* default_port;
 	char* default_ip;
-	char* servers_path;
 	GtkWidget* ip_hbox;
 	GtkWidget* ip_label;
 	GtkWidget* ip_entry;
@@ -163,15 +159,9 @@ TAB(Multiplayer, "Multiplayer", "Save", multiplayer_cb, {
 	GtkWidget* port_entry;
 	GtkWidget* notice_label;
 
-	default_ip = NULL;
-	default_port = 0x00;
-	asprintf(&servers_path, "%s/.minecraft-pi/servers.txt", getenv("HOME"));
-	if (access(servers_path, F_OK) == 0)
-	{
-		get_servers(&default_ip, &default_port);
-	}
-	free(servers_path);
-	if (default_ip == NULL || default_port == 0x00)
+	default_ip = mcpil_config_get_ip(config);
+	default_port = mcpil_config_get_port(config);
+	if (default_ip == NULL || default_port == NULL)
 	{
 		default_ip = "thebrokenrail.com";
 		default_port = "19132";
@@ -200,62 +190,48 @@ TAB(Multiplayer, "Multiplayer", "Save", multiplayer_cb, {
 	gtk_box_pack_start(GTK_BOX(tab), port_hbox, FALSE, FALSE, 0);
 	gtk_box_pack_start(GTK_BOX(tab), notice_label, FALSE, FALSE, 10);
 
-	multiplayer.ip_entry = ip_entry;
-	multiplayer.port_entry = port_entry;
+	settings_box.ip_entry = ip_entry;
+	settings_box.port_entry = port_entry;
+	setenv("GMCPIL_SERVER_IP", default_ip, 1);
+	setenv("GMCPIL_SERVER_PORT", default_port, 1);
 });
 
 TAB(Settings, "Settings", "Save", settings_cb, {
 	int i = 0;
-	int sz = 0;
 	int distance_int;
-	char* buff = NULL;
-	char* lf_ptrs[2];
 	char* default_username;
 	char* default_distance;
-	char* settings_path;
-	FILE* settings_file;
+	char* default_mcpi_path;
 	GtkWidget* username_hbox;
 	GtkWidget* username_label;
 	GtkWidget* username_entry;
 	GtkWidget* distance_hbox;
 	GtkWidget* distance_label;
 	GtkWidget* distance_combo;
+	GtkWidget* mcpi_path_hbox;
+	GtkWidget* mcpi_path_label;
+	GtkWidget* mcpi_path_entry;
 
-	asprintf(&settings_path, "%s/.minecraft-pi/settings.txt", getenv("HOME"));
-	settings_file = fopen(settings_path, "r");
-
-	distance_int = 1;
-	default_distance = NULL;
-	default_username = "StevePi";
-	if (settings_file != NULL)
+	default_distance = mcpil_config_get_distance(config);
+	default_username = mcpil_config_get_username(config);
+	default_mcpi_path = mcpil_config_get_mcpi_path(config);
+	if (default_distance == NULL)
 	{
-		fseek(settings_file, 0, SEEK_END);
-		sz = ftell(settings_file);
-		fseek(settings_file, 0, SEEK_SET);
-
-		buff = (char*)malloc(sz + 1);
-		fread((void*)buff, 1, sz, settings_file);
-
-		lf_ptrs[0] = strchr(buff, '\n');
-		if (lf_ptrs[0] != NULL)
-		{
-			*lf_ptrs[0] = 0x00;
-			default_username = buff;
-
-			lf_ptrs[1] = strchr(lf_ptrs[0] + 1, '\n');
-			if (lf_ptrs[1] != NULL)
-			{
-				*lf_ptrs[1] = 0x00;
-				default_distance = lf_ptrs[0] + 1;
-				distance_int = get_distance(default_distance);
-				if (distance_int < 0)
-				{
-					distance_int = 1;
-				}
-			}
-		}
-		fclose(settings_file);
+		default_distance = "Normal";
+		mcpil_config_set_distance(config, default_distance);
 	}
+	if (default_username == NULL)
+	{
+		default_username = "StevePi";
+		mcpil_config_set_username(config, default_username);
+	}
+	if (default_mcpi_path == NULL)
+	{
+		default_mcpi_path = "/usr/bin/minecraft-pi-reborn";
+		mcpil_config_set_mcpi_path(config, default_mcpi_path);
+	}
+
+	distance_int = get_distance(default_distance);
 
 	username_hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
 	username_label = gtk_label_new("Username:");
@@ -274,29 +250,33 @@ TAB(Settings, "Settings", "Save", settings_cb, {
 	}
 	gtk_combo_box_set_active(GTK_COMBO_BOX(distance_combo), distance_int);
 
+	mcpi_path_hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
+	mcpi_path_label = gtk_label_new("Custom MCPI-Reborn path:");
+
+	mcpi_path_entry = gtk_entry_new_with_buffer(gtk_entry_buffer_new(default_mcpi_path, strlen(default_mcpi_path)));
+
 	gtk_box_pack_start(GTK_BOX(username_hbox), username_label, FALSE, FALSE, 10);
 	gtk_box_pack_start(GTK_BOX(username_hbox), username_entry, TRUE, TRUE, 10);
 
 	gtk_box_pack_start(GTK_BOX(distance_hbox), distance_label, FALSE, FALSE, 10);
 	gtk_box_pack_start(GTK_BOX(distance_hbox), distance_combo, TRUE, TRUE, 10);
 
+	gtk_box_pack_start(GTK_BOX(mcpi_path_hbox), mcpi_path_label, FALSE, FALSE, 10);
+	gtk_box_pack_start(GTK_BOX(mcpi_path_hbox), mcpi_path_entry, TRUE, TRUE, 10);
+
 	gtk_box_pack_start(GTK_BOX(tab), username_hbox, FALSE, FALSE, 0);
 	gtk_box_pack_start(GTK_BOX(tab), distance_hbox, FALSE, FALSE, 0);
+	gtk_box_pack_start(GTK_BOX(tab), mcpi_path_hbox, FALSE, FALSE, 25);
 
-	settings.username_entry = GTK_ENTRY(username_entry);
-	settings.distance_combo = GTK_COMBO_BOX_TEXT(distance_combo);
+	settings_box.username_entry = GTK_ENTRY(username_entry);
+	settings_box.distance_combo = GTK_COMBO_BOX_TEXT(distance_combo);
+	settings_box.mcpi_path_entry = GTK_ENTRY(mcpi_path_entry);
 
 	setenv("MCPI_USERNAME", default_username, 1);
 	setenv("MCPI_RENDER_DISTANCE", distances[distance_int], 1);
-
-	if (buff != NULL)
-	{
-		free(buff);
-	}
-	free(settings_path);
 });
 
-TAB(About, "Minecraft Pi Launcher", "Help...", about_cb, {
+TAB(About, "Minecraft Pi Launcher", "Help", about_cb, {
 	int sz = 0;
 	char* buff;
 	FILE* changelog_file;
@@ -307,7 +287,7 @@ TAB(About, "Minecraft Pi Launcher", "Help...", about_cb, {
 	GtkTextBuffer* changelog_buffer;
 
 	buff = NULL;
-	changelog_file = fopen("/usr/share/doc/mcpil/CHANGELOG.txt", "r");
+	changelog_file = fopen("/usr/share/doc/gmcpil/CHANGELOG.txt", "r");
 	if (changelog_file != NULL)
 	{
 		fseek(changelog_file, 0, SEEK_END);

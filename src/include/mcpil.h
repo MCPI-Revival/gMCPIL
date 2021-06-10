@@ -25,14 +25,16 @@
 #define MCPIL_H
 
 #include <gtk/gtk.h>
+#include <config.h>
 
 #define MCPIL_MAJOR 0
-#define MCPIL_MINOR 9
+#define MCPIL_MINOR 10
 #define MCPIL_PATCH 0
-#define MCPIL_VERSION "v0.9.0"
+#define MCPIL_VERSION "v0.10.0"
 
 #define ASSERT(c, t, f) ((c) == FALSE ? f : t)
 #define STR(str) #str
+#define SAFE_ATOI(str) strtol(str ? str : "", NULL, 10)
 
 #define FEAT_BOOL(i) (features[i][0])
 #define FEAT_INT(i) ((int)features[i][0])
@@ -65,22 +67,19 @@
 
 typedef void* feature_t[2];
 
-typedef struct multiplayer_t
+typedef struct settings_box_t
 {
 	GtkWidget* ip_entry;
 	GtkWidget* port_entry;
-	char* buff;
-} multiplayer_t;
-
-typedef struct settings_t
-{
 	GtkEntry* username_entry;
+	GtkEntry* mcpi_path_entry;
 	GtkComboBoxText* distance_combo;
-} settings_t;
+	char* buff;
+} settings_box_t;
 
 feature_t features[24];
-multiplayer_t multiplayer;
-settings_t settings;
+settings_box_t settings_box;
+MCPILConfig* config;
 
 int featc;
 
@@ -117,6 +116,7 @@ GtkWidget* Features_tab(GtkWidget* notebook);
 GtkWidget* Multiplayer_tab(GtkWidget* notebook);
 GtkWidget* Settings_tab(GtkWidget* notebook);
 GtkWidget* About_tab(GtkWidget* notebook);
+GtkWidget* advanced_settings(GtkWidget* parent);
 
 /* Variable declarations */
 GtkWidget* window;
