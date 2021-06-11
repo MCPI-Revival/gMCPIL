@@ -25,6 +25,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdint.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 
@@ -49,7 +50,8 @@ int get_features()
 
 	buff_sz = 48;
 	buff = (char*)malloc((int)buff_sz + 1);
-	file = popen("minecraft-pi-reborn --print-available-feature-flags", "r");
+	buff[0] = 0x00;
+	file = popen("minecraft-pi-reborn-client --print-available-feature-flags", "r");
 
 	if (file == NULL)
 	{
@@ -58,7 +60,7 @@ int get_features()
 	}
 	while ((sz = getline(&buff, &buff_sz, file)) > 0)
 	{
-		FEAT_BOOL(i) = (void*)(buff[0] == 'T');
+		FEAT_BOOL(i) = (void*)(intptr_t)(buff[0] == 'T');
 		buff[sz - 1] = 0x00;
 		offset = ASSERT(FEAT_BOOL(i), 5, 6);
 		FEAT_PTR(i) = strdup(buff + offset);

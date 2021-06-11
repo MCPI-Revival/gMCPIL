@@ -67,11 +67,11 @@ int build_sockaddr(server_t* server)
 /* Extends port search (19132-19139) and address search (servers->ip:servers->port). */
 HOOK(sendto, ssize_t, (int sockfd, const void* buf, size_t len, int flags, const struct sockaddr* dest_addr, socklen_t addrlen))
 {
-	int i = 19136;
+	unsigned int i = 19136;
 	struct sockaddr_in* addr = (struct sockaddr_in*)dest_addr;
 
 	ensure_sendto();
-	if (addr->sin_addr.s_addr == -1 && ntohs(addr->sin_port) == 19135)
+	if (addr->sin_addr.s_addr == (unsigned int) -1 /* This IS intentional, -1 is the equivalent to the broadcast address. */ && ntohs(addr->sin_port) == 19135)
 	{
 		while (i < 19139)
 		{
@@ -98,7 +98,7 @@ HOOK(sendto, ssize_t, (int sockfd, const void* buf, size_t len, int flags, const
 
 void __attribute__((constructor)) init()
 {
-	int i = 1;
+	unsigned int i = 1;
 	char* tmp_ip = NULL;
 	char* tmp_port = NULL;
 

@@ -38,7 +38,7 @@
 			real_##name = (name##_t)dlsym(RTLD_NEXT, #name); \
 			if (!real_##name) \
 			{ \
-				fprintf("ERROR: Resolving Symbol: "#name", %s", dlerror()); \
+				fprintf(stderr, "ERROR: Resolving Symbol: "#name", %s\n", dlerror()); \
 			} \
 		} \
 	}; \

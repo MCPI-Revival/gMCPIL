@@ -25,6 +25,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdint.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 
@@ -33,7 +34,7 @@
 #include <splashes.h>
 
 /* Callbacks */
-void features_cb(GtkWidget* button, void* udata)
+void features_cb(__attribute__((unused)) GtkWidget* button, void* udata)
 {
 	int i = 0;
 	int sz = 1;
@@ -75,15 +76,15 @@ void features_cb(GtkWidget* button, void* udata)
 	return;
 }
 
-void toggle_cb(GtkWidget* check, void* udata)
+void toggle_cb(__attribute__((unused)) GtkWidget* check, void* udata)
 {
 	int i = (int)udata;
 
-	FEAT_BOOL(i) = (void*)(!FEAT_INT(i));
+	FEAT_BOOL(i) = (void*)(intptr_t)(!FEAT_INT(i));
 	return;
 }
 
-void multiplayer_cb(GtkWidget* button, void* udata)
+void multiplayer_cb(__attribute__((unused)) GtkWidget* button, __attribute__((unused)) void* udata)
 {
 	const char* ip;
 	const char* port;
@@ -108,29 +109,23 @@ void multiplayer_cb(GtkWidget* button, void* udata)
 	return;
 }
 
-void watch_cb(GPid pid, int status, void* udata)
+void watch_cb(GPid pid, __attribute__((unused)) int status, __attribute__((unused)) void* udata)
 {
 	g_spawn_close_pid(pid);
 	return;
 }
 
-void launch_cb(GtkWidget* button, void* udata)
+void launch_cb(__attribute__((unused)) GtkWidget* button, __attribute__((unused)) void* udata)
 {
-	char* tmp_path;
-	char* argv[] = {"/usr/bin/minecraft-pi-reborn", NULL};
+	char* argv[] = {"/bin/sh", "-c", "minecraft-pi-reborn-client", NULL};
 	GPid pid;
 	GError* err = NULL;
-
-	tmp_path = mcpil_config_get_mcpi_path(config);
-	if (tmp_path[1] != 0x00)
-	{
-		argv[0] = tmp_path;
-	}
 
 	g_spawn_async(NULL, argv, NULL, G_SPAWN_DO_NOT_REAP_CHILD, NULL, NULL, &pid, &err);
 
 	if (err != NULL)
 	{
+	    g_error("Spawning child failed: %s", err->message);
 		return;
 	}
 
@@ -138,7 +133,7 @@ void launch_cb(GtkWidget* button, void* udata)
 	return;
 }
 
-void select_cb(GtkWidget* list, GtkListBoxRow* row, void* udata)
+void select_cb(__attribute__((unused)) GtkWidget* list, GtkListBoxRow* row, void* udata)
 {
 	int i = 0;
 	char tmp[2] = {0x00, 0x00};
@@ -152,11 +147,10 @@ void select_cb(GtkWidget* list, GtkListBoxRow* row, void* udata)
 	return;
 }
 
-void settings_cb(GtkWidget* button, void* udata)
+void settings_cb(__attribute__((unused)) GtkWidget* button, __attribute__((unused)) void* udata)
 {
 	const char* username;
 	const char* distance;
-	const char* mcpi_path;
 	GtkEntryBuffer* gtk_buff;
 
 	gtk_buff = gtk_entry_get_buffer(GTK_ENTRY(settings_box.username_entry));
@@ -164,27 +158,23 @@ void settings_cb(GtkWidget* button, void* udata)
 	username = gtk_entry_buffer_get_text(gtk_buff);
 	distance = gtk_combo_box_text_get_active_text(settings_box.distance_combo);
 
-	gtk_buff = gtk_entry_get_buffer(GTK_ENTRY(settings_box.mcpi_path_entry));
-	mcpi_path = gtk_entry_buffer_get_text(gtk_buff);
-
 	setenv("MCPI_USERNAME", username, 1);
 	setenv("MCPI_RENDER_DISTANCE", distance, 1);
 
 	mcpil_config_set_username(config, username);
 	mcpil_config_set_distance(config, distance);
-	mcpil_config_set_mcpi_path(config, mcpi_path);
 	mcpil_config_save(config);
 	return;
 }
 
-void about_cb(GtkWidget* button, void* udata)
+void about_cb(__attribute__((unused)) GtkWidget* button, __attribute__((unused)) void* udata)
 {
 	GError* err;
 	gtk_show_uri_on_window(GTK_WINDOW(window), "https://discord.gg/jEXwEdx", GDK_CURRENT_TIME, &err);
 	return;
 }
 
-void activate_cb(GtkApplication* app, void* udata)
+void activate_cb(GtkApplication* app, __attribute__((unused)) void* udata)
 {
 	GdkPixbuf* icon;
 	GtkWidget* notebook;

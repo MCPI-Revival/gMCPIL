@@ -20,31 +20,54 @@
 #  
 #  
 
+ifdef USE_CLANG
+CC:=clang
+ARM_CC:=clang -target arm-linux-gnueabihf
+LDFLAGS:=-fuse-ld=lld
+STRIP:=llvm-strip
+ARCH:=$(shell $(CC) -dumpmachine | grep -Eo "arm|aarch|86")
+else
 CC:=gcc
 ARM_CC:=arm-linux-gnueabihf-gcc
+LDFLAGS:=
+STRIP:=strip
 ARCH:=$(shell $(CC) -print-multiarch | grep -Eo "arm|aarch|86")
+endif
 
 OBJS:=$(patsubst %,build/%.o,mcpil config helpers callbacks tabs)
 MODS:=$(patsubst %,build/lib%.so,multiplayer)
 
+LDFLAGS+=-Wl,--no-undefined
+
 CFLAGS:=-I./src/include -Wall
-GTK_CONFIG:=`pkg-config --libs --cflags gtk+-3.0 json-glib-1.0`
+GTK_CFLAGS:=`pkg-config --cflags gtk+-3.0 json-glib-1.0`
+GTK_LDFLAGS:=`pkg-config --libs gtk+-3.0 json-glib-1.0`
 MOD_CONFIG:=--shared -ldl
+
+ifdef DEBUG
+CFLAGS+=-g -Wall -Wextra -Werror
+else
+CFLAGS+=-O3
+endif
 
 VERSION:=0.10.0-rc1
 
 .PHONY: ./build/gmcpil
 
 ./build/gmcpil: mkdir $(MODS) $(OBJS)
-	$(CC) -fPIC -fpie $(OBJS) -o $@ $(GTK_CONFIG) $(CFLAGS)
-	@strip ./build/gmcpil
+	$(CC) -fPIC -fpie $(OBJS) -o $@ $(GTK_LDFLAGS) $(CFLAGS) $(LDFLAGS)
+ifndef DEBUG
+	$(STRIP) ./build/gmcpil
+endif
 
 ./build/%.o: ./src/%.c ./src/include/*.h
-	$(CC) -c $< -o $@ $(GTK_CONFIG) $(CFLAGS)
+	$(CC) -fPIC -c $< -o $@ $(GTK_CFLAGS) $(CFLAGS)
 
 ./build/lib%.so: ./src/mods/%.c
-	$(ARM_CC) $< -o $@ $(MOD_CONFIG) $(CFLAGS)
-	@strip $@
+	$(ARM_CC) -fPIC $< -o $@ $(MOD_CONFIG) $(CFLAGS) $(LDFLAGS)
+ifndef DEBUG
+	$(STRIP) $@
+endif
 
 mkdir:
 	mkdir -p ./build/

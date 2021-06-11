@@ -32,7 +32,7 @@ G_BEGIN_DECLS
 #define MCPIL_TYPE_CONFIG mcpil_config_get_type()
 #define MCPIL_CONFIG(obj) G_TYPE_CHECK_INSTANCE_CAST(obj, MCPIL_TYPE_CONFIG, MCPILConfig)
 #define MCPIL_IS_CONFIG(obj) G_TYPE_CHECK_INSTANCE_TYPE(obj, MCPIL_TYPE_CONFIG)
-#define MCPIL_CONFIG_PRIVATE(obj) G_TYPE_INSTANCE_GET_PRIVATE(obj, MCPIL_TYPE_CONFIG, MCPILConfigPrivate)
+#define MCPIL_CONFIG_PRIVATE(obj) mcpil_config_get_instance_private(obj)
 
 #define VALID_JSON_ARGS(dst, name, parent) \
 	(parent.node != NULL || dst != NULL || name != NULL || JSON_NODE_HOLDS_OBJECT(parent.node) || parent.obj == NULL)
@@ -76,7 +76,6 @@ void mcpil_config_set_username(MCPILConfig* self, const gchar* username);
 void mcpil_config_set_features(MCPILConfig* self, const gchar* features);
 void mcpil_config_set_distance(MCPILConfig* self, const gchar* distance);
 void mcpil_config_set_last_profile(MCPILConfig* self, const gchar* profile);
-void mcpil_config_set_mcpi_path(MCPILConfig* self, const gchar* path);
 
 gchar* mcpil_config_get_ip(MCPILConfig* self);
 gchar* mcpil_config_get_port(MCPILConfig* self);
@@ -84,7 +83,6 @@ gchar* mcpil_config_get_username(MCPILConfig* self);
 gchar* mcpil_config_get_features(MCPILConfig* self);
 gchar* mcpil_config_get_distance(MCPILConfig* self);
 gchar* mcpil_config_get_last_profile(MCPILConfig* self);
-gchar* mcpil_config_get_mcpi_path(MCPILConfig* self);
 
 int mcpil_config_save(MCPILConfig* self);
 

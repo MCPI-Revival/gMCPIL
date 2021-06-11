@@ -25,6 +25,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdint.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 
@@ -136,7 +137,7 @@ TAB(Features, "Features", "Save", features_cb, {
 	{
 		feature_check = gtk_check_button_new_with_label(FEAT_STR(i));
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(feature_check), FEAT_INT(i));
-		g_signal_connect(feature_check, "toggled", G_CALLBACK(toggle_cb), (void*)i);
+		g_signal_connect(feature_check, "toggled", G_CALLBACK(toggle_cb), (void*)(intptr_t)i);
 		gtk_box_pack_start(GTK_BOX(tab), feature_check, FALSE, FALSE, 0);
 		i++;
 	}
@@ -201,20 +202,15 @@ TAB(Settings, "Settings", "Save", settings_cb, {
 	int distance_int;
 	char* default_username;
 	char* default_distance;
-	char* default_mcpi_path;
 	GtkWidget* username_hbox;
 	GtkWidget* username_label;
 	GtkWidget* username_entry;
 	GtkWidget* distance_hbox;
 	GtkWidget* distance_label;
 	GtkWidget* distance_combo;
-	GtkWidget* mcpi_path_hbox;
-	GtkWidget* mcpi_path_label;
-	GtkWidget* mcpi_path_entry;
 
 	default_distance = mcpil_config_get_distance(config);
 	default_username = mcpil_config_get_username(config);
-	default_mcpi_path = mcpil_config_get_mcpi_path(config);
 	if (default_distance == NULL)
 	{
 		default_distance = "Normal";
@@ -224,11 +220,6 @@ TAB(Settings, "Settings", "Save", settings_cb, {
 	{
 		default_username = "StevePi";
 		mcpil_config_set_username(config, default_username);
-	}
-	if (default_mcpi_path == NULL)
-	{
-		default_mcpi_path = "/usr/bin/minecraft-pi-reborn";
-		mcpil_config_set_mcpi_path(config, default_mcpi_path);
 	}
 
 	distance_int = get_distance(default_distance);
@@ -250,27 +241,17 @@ TAB(Settings, "Settings", "Save", settings_cb, {
 	}
 	gtk_combo_box_set_active(GTK_COMBO_BOX(distance_combo), distance_int);
 
-	mcpi_path_hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
-	mcpi_path_label = gtk_label_new("Custom MCPI-Reborn path:");
-
-	mcpi_path_entry = gtk_entry_new_with_buffer(gtk_entry_buffer_new(default_mcpi_path, strlen(default_mcpi_path)));
-
 	gtk_box_pack_start(GTK_BOX(username_hbox), username_label, FALSE, FALSE, 10);
 	gtk_box_pack_start(GTK_BOX(username_hbox), username_entry, TRUE, TRUE, 10);
 
 	gtk_box_pack_start(GTK_BOX(distance_hbox), distance_label, FALSE, FALSE, 10);
 	gtk_box_pack_start(GTK_BOX(distance_hbox), distance_combo, TRUE, TRUE, 10);
 
-	gtk_box_pack_start(GTK_BOX(mcpi_path_hbox), mcpi_path_label, FALSE, FALSE, 10);
-	gtk_box_pack_start(GTK_BOX(mcpi_path_hbox), mcpi_path_entry, TRUE, TRUE, 10);
-
 	gtk_box_pack_start(GTK_BOX(tab), username_hbox, FALSE, FALSE, 0);
 	gtk_box_pack_start(GTK_BOX(tab), distance_hbox, FALSE, FALSE, 0);
-	gtk_box_pack_start(GTK_BOX(tab), mcpi_path_hbox, FALSE, FALSE, 25);
 
 	settings_box.username_entry = GTK_ENTRY(username_entry);
 	settings_box.distance_combo = GTK_COMBO_BOX_TEXT(distance_combo);
-	settings_box.mcpi_path_entry = GTK_ENTRY(mcpi_path_entry);
 
 	setenv("MCPI_USERNAME", default_username, 1);
 	setenv("MCPI_RENDER_DISTANCE", distances[distance_int], 1);

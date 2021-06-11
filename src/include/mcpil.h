@@ -72,7 +72,6 @@ typedef struct settings_box_t
 	GtkWidget* ip_entry;
 	GtkWidget* port_entry;
 	GtkEntry* username_entry;
-	GtkEntry* mcpi_path_entry;
 	GtkComboBoxText* distance_combo;
 	char* buff;
 } settings_box_t;

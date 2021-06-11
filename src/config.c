@@ -37,7 +37,6 @@ struct MCPILConfigPrivate
 	gchar* distance;
 	gchar* filename;
 	gchar* last_profile;
-	gchar* mcpi_path;
 };
 
 enum
@@ -48,15 +47,14 @@ enum
 	PROP_USERNAME,
 	PROP_FEATURES,
 	PROP_DISTANCE,
-	PROP_LAST_PROFILE,
-	PROP_MCPI_PATH
+	PROP_LAST_PROFILE
 };
+
+G_DEFINE_TYPE_WITH_CODE(MCPILConfig, mcpil_config, G_TYPE_OBJECT, G_ADD_PRIVATE(MCPILConfig))
 
 static void mcpil_config_finalize(GObject* obj);
 static void mcpil_config_set_property(GObject* obj, guint prop_id, const GValue* value, GParamSpec* pspec);
 static void mcpil_config_get_property(GObject* obj, guint prop_id, GValue* value, GParamSpec* pspec);
-
-G_DEFINE_TYPE_WITH_PRIVATE(MCPILConfig, mcpil_config, G_TYPE_OBJECT);
 
 static void mcpil_config_class_init(MCPILConfigClass* klass)
 {
@@ -85,9 +83,6 @@ static void mcpil_config_class_init(MCPILConfigClass* klass)
 
 	pspec = g_param_spec_string("last_profile", "Last profile", "Last selected profile", NULL, G_PARAM_READWRITE);
 	g_object_class_install_property(gobject_class, PROP_LAST_PROFILE, pspec);
-
-	pspec = g_param_spec_string("mcpi_path", "MCPI path", "MCPI-Reborn path", NULL, G_PARAM_READWRITE);
-	g_object_class_install_property(gobject_class, PROP_MCPI_PATH, pspec);
 	return;
 }
 
@@ -101,7 +96,6 @@ static void mcpil_config_init(MCPILConfig* self)
 	private->features = NULL;
 	private->distance = NULL;
 	private->last_profile = NULL;
-	private->mcpi_path = NULL;
 	return;
 }
 
@@ -139,10 +133,6 @@ static void mcpil_config_finalize(GObject* obj)
 	{
 		g_free(private->last_profile);
 	}
-	if (private->mcpi_path != NULL)
-	{
-		g_free(private->mcpi_path);
-	}
 
 	(*parent_class->finalize)(obj);
 	return;
@@ -154,7 +144,6 @@ GETTER_SETTER(gchar*, username);
 GETTER_SETTER(gchar*, features);
 GETTER_SETTER(gchar*, distance);
 GETTER_SETTER(gchar*, last_profile);
-GETTER_SETTER(gchar*, mcpi_path);
 
 static void mcpil_config_set_property(GObject* obj, guint prop_id, const GValue* value, GParamSpec* pspec)
 {
@@ -179,9 +168,6 @@ static void mcpil_config_set_property(GObject* obj, guint prop_id, const GValue*
 		break;
 		case PROP_LAST_PROFILE:
 			mcpil_config_set_last_profile(self, g_value_get_string(value));
-		break;
-		case PROP_MCPI_PATH:
-			mcpil_config_set_mcpi_path(self, g_value_get_string(value));
 		break;
 		default:
 			G_OBJECT_WARN_INVALID_PROPERTY_ID(obj, prop_id, pspec);
@@ -213,9 +199,6 @@ static void mcpil_config_get_property(GObject* obj, guint prop_id, GValue* value
 		break;
 		case PROP_LAST_PROFILE:
 			g_value_set_string(value, mcpil_config_get_last_profile(self));
-		break;
-		case PROP_MCPI_PATH:
-			g_value_set_string(value, mcpil_config_get_mcpi_path(self));
 		break;
 		default:
 			G_OBJECT_WARN_INVALID_PROPERTY_ID(obj, prop_id, pspec);
@@ -290,7 +273,7 @@ MCPILConfig* mcpil_config_new(gchar* filename)
 		buff[0] = '{';
 		buff[1] = '}';
 		err = NULL;
-		obj = json_gobject_from_data(MCPIL_TYPE_CONFIG, buff, sz, &err);
+		obj = json_gobject_from_data(MCPIL_TYPE_CONFIG, buff, 2, &err);
 	}
 	self = MCPIL_CONFIG(obj);
 	private = MCPIL_CONFIG_PRIVATE(self);
