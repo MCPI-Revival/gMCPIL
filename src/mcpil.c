@@ -64,6 +64,8 @@ int main(int argc, char* argv[])
 	/* Initialize */
 	srand(time(NULL));
 	setenv("LD_PRELOAD", "/usr/lib/gmcpil/libmultiplayer.so", 1);
+	/* This is cursed, but it works:tm: */
+	setenv("GTK_THEME", "Adwaita:dark", 1);
 
 	asprintf(&config_path, "%s/.minecraft-pi/gmcpil.json", getenv("HOME"));
 	config = mcpil_config_new(config_path);
