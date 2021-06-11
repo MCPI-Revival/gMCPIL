@@ -29,7 +29,7 @@ MODS:=$(patsubst %,build/lib%.so,multiplayer)
 
 CFLAGS:=-I./src/include -Wall
 GTK_CONFIG:=`pkg-config --libs --cflags gtk+-3.0 json-glib-1.0`
-MOD_CONFIG:=--shared -ldl -I./lib/libreborn
+MOD_CONFIG:=--shared -ldl
 
 VERSION:=0.10.0-rc1
 

@@ -47,7 +47,7 @@ make && make pack
  + Coming soon: More stuff
 
 ## Changelog
-See the [CHANGELOG.txt](https://github.com/MCPI-Revival/gMCPIL/blob/master/res/doc/mcpil/CHANGELOG.txt) file.
+See the [CHANGELOG.txt](https://github.com/MCPI-Revival/gMCPIL/blob/master/res/doc/gmcpil/CHANGELOG.txt) file.
 
 ## Licensing
 All the code of this project is licensed under the [GNU General Public License version 2.0](https://github.com/Alvarito050506/MCPIL/blob/master/LICENSE) (GPL-2.0).
