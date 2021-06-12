@@ -92,7 +92,7 @@ else
 	@echo "Architecture: armhf" >> ./deb/DEBIAN/control
 endif
 	@echo "Section: contrib/misc" >> ./deb/DEBIAN/control
-	@echo "Depends: libc6 (>= 2.28), minecraft-pi-reborn-native | minecraft-pi-reborn-virgl | mcpirdl, libgtk-3-0, libjson-glib-1.0-0" >> ./deb/DEBIAN/control
+	@echo "Depends: libc6 (>= 2.28), libgtk-3-0, libjson-glib-1.0-0" >> ./deb/DEBIAN/control
 	@echo "Maintainer: Alvarito050506 <donfrutosgomez@gmail.com>" >> ./deb/DEBIAN/control
 	@echo "Homepage: https://mcpirevival.tk" >> ./deb/DEBIAN/control
 	@echo "Vcs-Browser: https://github.com/MCPI-Revival/gMCPIL" >> ./deb/DEBIAN/control
