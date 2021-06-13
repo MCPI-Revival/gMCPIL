@@ -106,7 +106,6 @@ void settings_cb(GtkWidget* button, void* udata);
 void about_cb(GtkWidget* button, void* udata);
 
 /* Misc/App */
-int check_libmultiplayer(char* path);
 void activate_cb(GtkApplication* app, void* udata);
 
 /* Tabs */

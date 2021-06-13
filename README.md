@@ -23,7 +23,7 @@
 
 ### Installation
 You can install gMCPIL from our APT repo, [mcpi-packages](https://github.com/MCPI-Revival/mcpi-packages):
-```
+```sh
 # If you didn't install mcpi-packages yet
 wget -qO- https://raw.githubusercontent.com/MCPI-Revival/mcpi-packages/master/install.sh | bash
 
@@ -34,11 +34,27 @@ sudo apt install gmcpil
 You can also download and install it from the [releases](https://github.com/MCPI-Revival/gMCPIL/releases) section.
 
 ### Compiling
+To build gMCPIL, you'll need GCC or Clang for the native and `arm-linux-gnueabihf` targets, plus some additional packages.
+Assuming a Debian-based distro, you can install them with the following command:
+```sh
+# For GCC
+sudo apt install gcc gcc-arm-linux-gnueabihf
+
+# Libraries and other build dependencies
+sudo apt install git make libjson-glib-dev libgtk-3-dev dpkg-dev fakeroot
 ```
+
+After installing the build dependencies, you can clone the repo and build gMCPIL:
+```sh
 git clone https://github.com/MCPI-Revival/gMCPIL
 cd gMCPIL
-make && make pack
+
+make # Build gMCPIL and mods
+make pack # Make a Debian package
 ```
+
+You can also set the `DEBUG` and `USE_CLANG` environment variables to add debug symbols to the executable
+and build using Clang instead of GCC, respectively.
 
 ## Features
  + Full MCPI-Reborn integration

@@ -25,13 +25,13 @@ CC:=clang
 ARM_CC:=clang -target arm-linux-gnueabihf
 LDFLAGS:=-fuse-ld=lld
 STRIP:=llvm-strip
-ARCH:=$(shell $(CC) -dumpmachine | grep -Eo "arm|aarch|86")
+ARCH:=$(shell $(CC) -dumpmachine | grep -Eo "arm|aarch|86|x86_64")
 else
 CC:=gcc
 ARM_CC:=arm-linux-gnueabihf-gcc
 LDFLAGS:=
 STRIP:=strip
-ARCH:=$(shell $(CC) -print-multiarch | grep -Eo "arm|aarch|86")
+ARCH:=$(shell $(CC) -print-multiarch | grep -Eo "arm|aarch|86|x86_64")
 endif
 
 OBJS:=$(patsubst %,build/%.o,mcpil config helpers callbacks tabs)
@@ -45,7 +45,7 @@ GTK_LDFLAGS:=`pkg-config --libs gtk+-3.0 json-glib-1.0`
 MOD_CONFIG:=--shared -ldl
 
 ifdef DEBUG
-CFLAGS+=-g -Wall -Wextra -Werror
+CFLAGS+=-g -Wextra -Werror
 else
 CFLAGS+=-O3
 endif
@@ -86,13 +86,15 @@ pack: ./build/gmcpil
 	@echo "Priority: optional" >> ./deb/DEBIAN/control
 ifeq ($(ARCH),86)
 	@echo "Architecture: i386" >> ./deb/DEBIAN/control
+else ifeq ($(ARCH),x86_64)
+	@echo "Architecture: amd64" >> ./deb/DEBIAN/control
 else ifeq ($(ARCH),aarch)
 	@echo "Architecture: arm64" >> ./deb/DEBIAN/control
 else
 	@echo "Architecture: armhf" >> ./deb/DEBIAN/control
 endif
 	@echo "Section: contrib/misc" >> ./deb/DEBIAN/control
-	@echo "Depends: libc6 (>= 2.28), minecraft-pi-reborn-native | minecraft-pi-reborn-virgl | mcpirdl, libgtk-3-0, libjson-glib-1.0-0" >> ./deb/DEBIAN/control
+	@echo "Depends: libc6 (>= 2.28), minecraft-pi-reborn-native | minecraft-pi-reborn-virgl, libgtk-3-0, libjson-glib-1.0-0" >> ./deb/DEBIAN/control
 	@echo "Maintainer: Alvarito050506 <donfrutosgomez@gmail.com>" >> ./deb/DEBIAN/control
 	@echo "Homepage: https://mcpirevival.tk" >> ./deb/DEBIAN/control
 	@echo "Vcs-Browser: https://github.com/MCPI-Revival/gMCPIL" >> ./deb/DEBIAN/control

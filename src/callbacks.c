@@ -125,7 +125,7 @@ void launch_cb(__attribute__((unused)) GtkWidget* button, __attribute__((unused)
 
 	if (err != NULL)
 	{
-	    g_error("Spawning child failed: %s", err->message);
+		g_error("Spawning child failed: %s", err->message);
 		return;
 	}
 

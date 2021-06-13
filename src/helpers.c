@@ -86,12 +86,14 @@ int set_feature_envs(int feat)
 		}
 		if (i == 2)
 		{
-			if (FEAT_CMP(feat, "Fancy Graphics") || FEAT_CMP(feat, "Smooth Lighting") || FEAT_CMP(feat, "Animated Water") || FEAT_CMP(feat, "Disable gui_blocks Atlas"))
+			if (FEAT_CMP(feat, "Fancy Graphics") ||
+				FEAT_CMP(feat, "Smooth Lighting") ||
+				FEAT_CMP(feat, "Animated Water") ||
+				FEAT_CMP(feat, "Disable gui_blocks Atlas"))
 			{
 				i++;
 				continue;
 			}
-
 		}
 		if (FEAT_INT(feat) == TRUE)
 		{
@@ -147,18 +149,4 @@ int get_distance(char* str)
 		break;
 	}
 	return -1;
-}
-
-int check_libmultiplayer(char* path)
-{
-	struct stat attrs[2];
-
-	stat(path, &attrs[0]);
-	stat("/usr/lib/gmcpil/libmultiplayer.so", &attrs[1]);
-
-	if (access(path, F_OK) != 0 || attrs[1].st_mtime >= attrs[0].st_mtime)
-	{
-		return 1;
-	}
-	return 0;
 }
