@@ -90,6 +90,8 @@ TAB(Features, "Features", "Save", features_cb, {
 	char* tmp;
 	char* features_buff;
 	GtkWidget* feature_check;
+	GtkWidget* scroll;
+	GtkWidget* vbox;
 	feature_t* feature;
 
 	featc = 0;
@@ -132,13 +134,20 @@ TAB(Features, "Features", "Save", features_cb, {
 		printf("Yeah, no.\n");
 	}
 
+	scroll = gtk_scrolled_window_new(NULL, NULL);
+	gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scroll), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
+	gtk_scrolled_window_set_shadow_type(GTK_SCROLLED_WINDOW(scroll), GTK_SHADOW_NONE);
+	gtk_container_set_border_width(GTK_CONTAINER(scroll), 0);
+
+	vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
+
 	i = 0;
 	while (i < featc)
 	{
 		feature_check = gtk_check_button_new_with_label(FEAT_STR(i));
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(feature_check), FEAT_INT(i));
 		g_signal_connect(feature_check, "toggled", G_CALLBACK(toggle_cb), (void*)(intptr_t)i);
-		gtk_box_pack_start(GTK_BOX(tab), feature_check, FALSE, FALSE, 0);
+		gtk_box_pack_start(GTK_BOX(vbox), feature_check, FALSE, FALSE, 0);
 		i++;
 	}
 
@@ -147,6 +156,9 @@ TAB(Features, "Features", "Save", features_cb, {
 	mcpil_config_set_features(config, features_envs[4]);
 	last_profile = SAFE_ATOI(mcpil_config_get_last_profile(config));
 	setenv("MCPI_FEATURE_FLAGS", features_envs[last_profile], 1);
+
+	gtk_container_add(GTK_CONTAINER(scroll), vbox);
+	gtk_box_pack_start(GTK_BOX(tab), scroll, TRUE, TRUE, 0);
 });
 
 TAB(Multiplayer, "Multiplayer", "Save", multiplayer_cb, {
