@@ -181,7 +181,7 @@ void activate_cb(GtkApplication* app, __attribute__((unused)) void* udata)
 
 	window = gtk_application_window_new(app);
 	gtk_window_set_title(GTK_WINDOW(window), "gMCPIL - MCPIL GTK+ Edition");
-	gtk_window_set_default_size(GTK_WINDOW(window), 480, 240); // I don't even know
+	gtk_window_set_default_size(GTK_WINDOW(window), 458, 375); // I don't even know
 
 	icon = gtk_icon_theme_load_icon(gtk_icon_theme_get_default(), "gmcpil", 32, GTK_ICON_LOOKUP_NO_SVG, NULL);
 	gtk_window_set_icon(GTK_WINDOW(window), icon);

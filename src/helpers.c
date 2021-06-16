@@ -51,7 +51,7 @@ int get_features()
 	buff_sz = 48;
 	buff = (char*)malloc((int)buff_sz + 1);
 	buff[0] = 0x00;
-	file = popen("minecraft-pi-reborn-client --print-available-feature-flags", "r");
+	file = fopen("/opt/minecraft-pi-reborn-client/available-feature-flags", "r");
 
 	if (file == NULL)
 	{
@@ -62,11 +62,11 @@ int get_features()
 	{
 		FEAT_BOOL(i) = (void*)(intptr_t)(buff[0] == 'T');
 		buff[sz - 1] = 0x00;
-		offset = ASSERT(FEAT_BOOL(i), 5, 6);
+		offset = FEAT_BOOL(i) == FALSE ? 6 : 5;
 		FEAT_PTR(i) = strdup(buff + offset);
 		i++;
 	}
-	pclose(file);
+	fclose(file);
 	return i;
 }
 

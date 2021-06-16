@@ -32,7 +32,6 @@
 #define MCPIL_PATCH 0
 #define MCPIL_VERSION "v0.10.0"
 
-#define ASSERT(c, t, f) ((c) == FALSE ? f : t)
 #define STR(str) #str
 #define SAFE_ATOI(str) strtol(str ? str : "", NULL, 10)
 

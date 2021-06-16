@@ -268,12 +268,8 @@ MCPILConfig* mcpil_config_new(gchar* filename)
 	obj = json_gobject_from_data(MCPIL_TYPE_CONFIG, buff, sz, &err);
 	if (err != NULL)
 	{
-		free(buff);
-		buff = (char*)malloc(2);
-		buff[0] = '{';
-		buff[1] = '}';
 		err = NULL;
-		obj = json_gobject_from_data(MCPIL_TYPE_CONFIG, buff, 2, &err);
+		obj = g_object_new(MCPIL_TYPE_CONFIG, 0);
 	}
 	self = MCPIL_CONFIG(obj);
 	private = MCPIL_CONFIG_PRIVATE(self);
