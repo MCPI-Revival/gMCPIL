@@ -40,12 +40,15 @@ MODS:=$(patsubst %,build/lib%.so,multiplayer)
 LDFLAGS+=-Wl,--no-undefined
 
 CFLAGS:=-I./src/include -Wall
-GTK_CFLAGS:=`pkg-config --cflags gtk+-3.0 json-glib-1.0`
-GTK_LDFLAGS:=`pkg-config --libs gtk+-3.0 json-glib-1.0`
+# Needed because weird GdkPixbuf incompatibilities
+CFLAGS+=-Wno-deprecated-declarations
+GTK_CFLAGS:=`pkg-config --cflags gtk4 json-glib-1.0`
+GTK_LDFLAGS:=`pkg-config --libs gtk4 json-glib-1.0`
 MOD_CONFIG:=--shared -ldl
 
 ifdef DEBUG
-CFLAGS+=-g -Wextra -Werror
+CFLAGS+=-g -Wextra
+#-Werror
 else
 CFLAGS+=-O3
 endif

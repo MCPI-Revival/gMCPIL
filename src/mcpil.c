@@ -71,7 +71,7 @@ int main(int argc, char* argv[])
 	config = mcpil_config_new(config_path);
 	free(config_path);
 
-	gtk_init(&argc, &argv);
+	gtk_init();
 
 	app = gtk_application_new("tk.mcpirevival.gmcpil", G_APPLICATION_FLAGS_NONE);
 

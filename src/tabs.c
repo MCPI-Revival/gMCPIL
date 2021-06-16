@@ -49,9 +49,9 @@ TAB(Play, "Minecraft Pi Launcher", "Launch", launch_cb, {
 
 	splash = gtk_label_new(NULL);
 	gtk_label_set_markup(GTK_LABEL(splash), splash_text);
-	gtk_box_pack_start(GTK_BOX(tab), splash, FALSE, FALSE, 0);
+	gtk_box_append(GTK_BOX(tab), splash);
 
-	gtk_box_pack_start(GTK_BOX(tab), gtk_label_new("Select a Minecraft profile to launch"), FALSE, FALSE, 0);
+	gtk_box_append(GTK_BOX(tab), gtk_label_new("Select a Minecraft profile to launch"));
 	hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
 
 	list = gtk_list_box_new();
@@ -59,16 +59,15 @@ TAB(Play, "Minecraft Pi Launcher", "Launch", launch_cb, {
 
 	description = gtk_label_new("The description of the selected profile\nshould appear here.");
 	gtk_label_set_justify(GTK_LABEL(description), GTK_JUSTIFY_CENTER);
-	gtk_label_set_line_wrap(GTK_LABEL(description), TRUE);
+	gtk_label_set_wrap(GTK_LABEL(description), TRUE);
 
 	last_profile = SAFE_ATOI(mcpil_config_get_last_profile(config));
 	while (i < 5)
 	{
 		rows[i] = gtk_list_box_row_new();
 		tmp_hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
-		gtk_box_pack_start(GTK_BOX(tmp_hbox), gtk_label_new(profile_names[i]), FALSE, FALSE, 8);
-		gtk_container_add(GTK_CONTAINER(rows[i]), tmp_hbox);
-		gtk_container_add(GTK_CONTAINER(list), rows[i]);
+		gtk_box_append(GTK_BOX(tmp_hbox), gtk_label_new(profile_names[i]));
+		gtk_list_box_append(GTK_LIST_BOX(list), tmp_hbox);
 		i++;
 	}
 	gtk_list_box_select_row(GTK_LIST_BOX(list), GTK_LIST_BOX_ROW(rows[last_profile]));
@@ -76,11 +75,11 @@ TAB(Play, "Minecraft Pi Launcher", "Launch", launch_cb, {
 
 	g_signal_connect(list, "row-selected", G_CALLBACK(select_cb), (void*)description);
 
-	gtk_box_pack_start(GTK_BOX(hbox), list, FALSE, FALSE, 6);
-	gtk_box_pack_start(GTK_BOX(hbox), description, TRUE, TRUE, 0);
-	gtk_box_pack_start(GTK_BOX(tab), hbox, TRUE, FALSE, 0);
+	gtk_box_append(GTK_BOX(hbox), list);
+	gtk_box_append(GTK_BOX(hbox), description);
+	gtk_box_append(GTK_BOX(tab), hbox);
 
-	gtk_widget_show_all(list);
+	//gtk_widget_show(list);
 	free(splash_text);
 });
 
@@ -134,10 +133,10 @@ TAB(Features, "Features", "Save", features_cb, {
 		printf("Yeah, no.\n");
 	}
 
-	scroll = gtk_scrolled_window_new(NULL, NULL);
+	scroll = gtk_scrolled_window_new();
 	gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scroll), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
-	gtk_scrolled_window_set_shadow_type(GTK_SCROLLED_WINDOW(scroll), GTK_SHADOW_NONE);
-	gtk_container_set_border_width(GTK_CONTAINER(scroll), 0);
+	//gtk_scrolled_window_set_shadow_type(GTK_SCROLLED_WINDOW(scroll), GTK_SHADOW_NONE);
+	//gtk_container_set_border_width(GTK_CONTAINER(scroll), 0);
 
 	vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
 
@@ -145,9 +144,9 @@ TAB(Features, "Features", "Save", features_cb, {
 	while (i < featc)
 	{
 		feature_check = gtk_check_button_new_with_label(FEAT_STR(i));
-		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(feature_check), FEAT_INT(i));
+		gtk_check_button_set_active(GTK_CHECK_BUTTON(feature_check), FEAT_INT(i));
 		g_signal_connect(feature_check, "toggled", G_CALLBACK(toggle_cb), (void*)(intptr_t)i);
-		gtk_box_pack_start(GTK_BOX(vbox), feature_check, FALSE, FALSE, 0);
+		gtk_box_append(GTK_BOX(vbox), feature_check);
 		i++;
 	}
 
@@ -157,8 +156,8 @@ TAB(Features, "Features", "Save", features_cb, {
 	last_profile = SAFE_ATOI(mcpil_config_get_last_profile(config));
 	setenv("MCPI_FEATURE_FLAGS", features_envs[last_profile], 1);
 
-	gtk_container_add(GTK_CONTAINER(scroll), vbox);
-	gtk_box_pack_start(GTK_BOX(tab), scroll, TRUE, TRUE, 0);
+	gtk_scrolled_window_set_child(GTK_SCROLLED_WINDOW(scroll), vbox);
+	gtk_box_append(GTK_BOX(tab), scroll);
 });
 
 TAB(Multiplayer, "Multiplayer", "Save", multiplayer_cb, {
@@ -188,20 +187,20 @@ TAB(Multiplayer, "Multiplayer", "Save", multiplayer_cb, {
 	port_label = gtk_label_new("Port:");
 	port_entry = gtk_entry_new_with_buffer(gtk_entry_buffer_new(default_port, strlen(default_port)));
 
-	gtk_box_pack_start(GTK_BOX(ip_hbox), ip_label, FALSE, FALSE, 10);
-	gtk_box_pack_end(GTK_BOX(ip_hbox), ip_entry, FALSE, FALSE, 10);
+	gtk_box_append(GTK_BOX(ip_hbox), ip_label);
+	gtk_box_append(GTK_BOX(ip_hbox), ip_entry);
 
-	gtk_box_pack_start(GTK_BOX(port_hbox), port_label, FALSE, FALSE, 10);
-	gtk_box_pack_end(GTK_BOX(port_hbox), port_entry, FALSE, FALSE, 10);
+	gtk_box_append(GTK_BOX(port_hbox), port_label);
+	gtk_box_append(GTK_BOX(port_hbox), port_entry);
 
 	notice_label = gtk_label_new(NULL);
 	gtk_label_set_markup(GTK_LABEL(notice_label), MCPIL_FEATURED_NOTICE);
 	gtk_label_set_justify(GTK_LABEL(notice_label), GTK_JUSTIFY_CENTER);
-	gtk_label_set_line_wrap(GTK_LABEL(notice_label), TRUE);
+	gtk_label_set_wrap(GTK_LABEL(notice_label), TRUE);
 
-	gtk_box_pack_start(GTK_BOX(tab), ip_hbox, FALSE, FALSE, 0);
-	gtk_box_pack_start(GTK_BOX(tab), port_hbox, FALSE, FALSE, 0);
-	gtk_box_pack_start(GTK_BOX(tab), notice_label, FALSE, FALSE, 10);
+	gtk_box_append(GTK_BOX(tab), ip_hbox);
+	gtk_box_append(GTK_BOX(tab), port_hbox);
+	gtk_box_append(GTK_BOX(tab), notice_label);
 
 	settings_box.ip_entry = ip_entry;
 	settings_box.port_entry = port_entry;
@@ -253,14 +252,14 @@ TAB(Settings, "Settings", "Save", settings_cb, {
 	}
 	gtk_combo_box_set_active(GTK_COMBO_BOX(distance_combo), distance_int);
 
-	gtk_box_pack_start(GTK_BOX(username_hbox), username_label, FALSE, FALSE, 10);
-	gtk_box_pack_start(GTK_BOX(username_hbox), username_entry, TRUE, TRUE, 10);
+	gtk_box_append(GTK_BOX(username_hbox), username_label);
+	gtk_box_append(GTK_BOX(username_hbox), username_entry);
 
-	gtk_box_pack_start(GTK_BOX(distance_hbox), distance_label, FALSE, FALSE, 10);
-	gtk_box_pack_start(GTK_BOX(distance_hbox), distance_combo, TRUE, TRUE, 10);
+	gtk_box_append(GTK_BOX(distance_hbox), distance_label);
+	gtk_box_append(GTK_BOX(distance_hbox), distance_combo);
 
-	gtk_box_pack_start(GTK_BOX(tab), username_hbox, FALSE, FALSE, 0);
-	gtk_box_pack_start(GTK_BOX(tab), distance_hbox, FALSE, FALSE, 0);
+	gtk_box_append(GTK_BOX(tab), username_hbox);
+	gtk_box_append(GTK_BOX(tab), distance_hbox);
 
 	settings_box.username_entry = GTK_ENTRY(username_entry);
 	settings_box.distance_combo = GTK_COMBO_BOX_TEXT(distance_combo);
@@ -298,10 +297,10 @@ TAB(About, "Minecraft Pi Launcher", "Help", about_cb, {
 
 	link = gtk_link_button_new_with_label(MCPIL_REPO_URL, MCPIL_REPO_URL);
 
-	scroll = gtk_scrolled_window_new(NULL, NULL);
+	scroll = gtk_scrolled_window_new();
 	gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scroll), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
-	gtk_scrolled_window_set_shadow_type(GTK_SCROLLED_WINDOW(scroll), GTK_SHADOW_ETCHED_IN);
-	gtk_container_set_border_width(GTK_CONTAINER(scroll), 5);
+	//gtk_scrolled_window_set_shadow_type(GTK_SCROLLED_WINDOW(scroll), GTK_SHADOW_ETCHED_IN);
+	//gtk_container_set_border_width(GTK_CONTAINER(scroll), 5);
 
 	changelog_buffer = gtk_text_buffer_new(NULL);
 
@@ -318,8 +317,8 @@ TAB(About, "Minecraft Pi Launcher", "Help", about_cb, {
 	gtk_text_view_set_editable(GTK_TEXT_VIEW(changelog_view), FALSE);
 	gtk_text_view_set_cursor_visible(GTK_TEXT_VIEW(changelog_view), FALSE);
 
-	gtk_container_add(GTK_CONTAINER(scroll), changelog_view);
-	gtk_box_pack_start(GTK_BOX(tab), info_label, FALSE, FALSE, 0);
-	gtk_box_pack_start(GTK_BOX(tab), link, FALSE, FALSE, 0);
-	gtk_box_pack_start(GTK_BOX(tab), scroll, TRUE, TRUE, 0);
+	gtk_scrolled_window_set_child(GTK_SCROLLED_WINDOW(scroll), changelog_view);
+	gtk_box_append(GTK_BOX(tab), info_label);
+	gtk_box_append(GTK_BOX(tab), link);
+	gtk_box_append(GTK_BOX(tab), scroll);
 });

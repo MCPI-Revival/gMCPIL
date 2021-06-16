@@ -170,21 +170,20 @@ void settings_cb(__attribute__((unused)) GtkWidget* button, __attribute__((unuse
 void about_cb(__attribute__((unused)) GtkWidget* button, __attribute__((unused)) void* udata)
 {
 	GError* err;
-	gtk_show_uri_on_window(GTK_WINDOW(window), "https://discord.gg/jEXwEdx", GDK_CURRENT_TIME, &err);
+	gtk_show_uri_full(GTK_WINDOW(window), "https://discord.gg/jEXwEdx", GDK_CURRENT_TIME, NULL, (GAsyncReadyCallback)gtk_show_uri_full_finish, NULL);
+	
 	return;
 }
 
 void activate_cb(GtkApplication* app, __attribute__((unused)) void* udata)
 {
-	GdkPixbuf* icon;
 	GtkWidget* notebook;
 
 	window = gtk_application_window_new(app);
 	gtk_window_set_title(GTK_WINDOW(window), "gMCPIL - MCPIL GTK+ Edition");
 	gtk_window_set_default_size(GTK_WINDOW(window), 458, 375); // I don't even know
 
-	icon = gtk_icon_theme_load_icon(gtk_icon_theme_get_default(), "gmcpil", 32, GTK_ICON_LOOKUP_NO_SVG, NULL);
-	gtk_window_set_icon(GTK_WINDOW(window), icon);
+	gtk_window_set_icon_name(GTK_WINDOW(window), "gmcpil");
 
 	notebook = gtk_notebook_new();
 
@@ -194,7 +193,7 @@ void activate_cb(GtkApplication* app, __attribute__((unused)) void* udata)
 	Settings_tab(notebook);
 	About_tab(notebook);
 
-	gtk_container_add(GTK_CONTAINER(window), notebook);
-	gtk_widget_show_all(window);
+	gtk_window_set_child(GTK_WINDOW(window), notebook);
+	gtk_widget_show(window);
 	return;
 }

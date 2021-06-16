@@ -51,10 +51,10 @@
 	GtkWidget* title_hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0); \
 	GtkWidget* button_hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0); \
 	gtk_label_set_markup(GTK_LABEL(title), "<span size=\"24000\">" title_str "</span>"); \
-	gtk_box_pack_start(GTK_BOX(title_hbox), title, TRUE, FALSE, 0); \
-	gtk_box_pack_end(GTK_BOX(button_hbox), button, FALSE, FALSE, 0); \
-	gtk_box_pack_start(GTK_BOX(tab), title_hbox, FALSE, FALSE, 8); \
-	gtk_box_pack_end(GTK_BOX(tab), button_hbox, FALSE, FALSE, 0); \
+	gtk_box_append(GTK_BOX(title_hbox), title); \
+	gtk_box_append(GTK_BOX(button_hbox), button); \
+	gtk_box_append(GTK_BOX(tab), title_hbox); \
+	gtk_box_append(GTK_BOX(tab), button_hbox); \
 	gtk_notebook_append_page(GTK_NOTEBOOK(notebook), tab, gtk_label_new(STR(name_str))); \
 	code; \
 	g_signal_connect(button, "clicked", G_CALLBACK(button_cb), cb_udata); \
