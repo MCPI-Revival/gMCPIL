@@ -27,10 +27,10 @@
 #include <gtk/gtk.h>
 #include <config.h>
 
-#define MCPIL_MAJOR 0
-#define MCPIL_MINOR 10
-#define MCPIL_PATCH 0
-#define MCPIL_VERSION "v0.10.0"
+#define GMCPIL_MAJOR 0
+#define GMCPIL_MINOR 10
+#define GMCPIL_PATCH 0
+#define GMCPIL_VERSION "v0.10.0"
 
 #define STR(str) #str
 #define SAFE_ATOI(str) strtol(str ? str : "", NULL, 10)
@@ -68,9 +68,10 @@ typedef void* feature_t[2];
 
 typedef struct settings_box_t
 {
-	GtkWidget* ip_entry;
-	GtkWidget* port_entry;
+	GtkEntry* ip_entry;
+	GtkEntry* port_entry;
 	GtkEntry* username_entry;
+	GtkEntry* hud_entry;
 	GtkComboBoxText* distance_combo;
 	char* buff;
 } settings_box_t;
@@ -113,7 +114,6 @@ GtkWidget* Features_tab(GtkWidget* notebook);
 GtkWidget* Multiplayer_tab(GtkWidget* notebook);
 GtkWidget* Settings_tab(GtkWidget* notebook);
 GtkWidget* About_tab(GtkWidget* notebook);
-GtkWidget* advanced_settings(GtkWidget* parent);
 
 /* Variable declarations */
 GtkWidget* window;

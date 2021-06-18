@@ -76,6 +76,7 @@ void mcpil_config_set_username(MCPILConfig* self, const gchar* username);
 void mcpil_config_set_features(MCPILConfig* self, const gchar* features);
 void mcpil_config_set_distance(MCPILConfig* self, const gchar* distance);
 void mcpil_config_set_last_profile(MCPILConfig* self, const gchar* profile);
+void mcpil_config_set_hud(MCPILConfig* self, const gchar* hud);
 
 gchar* mcpil_config_get_ip(MCPILConfig* self);
 gchar* mcpil_config_get_port(MCPILConfig* self);
@@ -83,6 +84,7 @@ gchar* mcpil_config_get_username(MCPILConfig* self);
 gchar* mcpil_config_get_features(MCPILConfig* self);
 gchar* mcpil_config_get_distance(MCPILConfig* self);
 gchar* mcpil_config_get_last_profile(MCPILConfig* self);
+gchar* mcpil_config_get_hud(MCPILConfig* self);
 
 int mcpil_config_save(MCPILConfig* self);
 

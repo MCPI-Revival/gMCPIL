@@ -151,18 +151,24 @@ void settings_cb(__attribute__((unused)) GtkWidget* button, __attribute__((unuse
 {
 	const char* username;
 	const char* distance;
-	GtkEntryBuffer* gtk_buff;
+	const char* hud;
+	GtkEntryBuffer* username_buff;
+	GtkEntryBuffer* hud_buff;
 
-	gtk_buff = gtk_entry_get_buffer(GTK_ENTRY(settings_box.username_entry));
+	username_buff = gtk_entry_get_buffer(GTK_ENTRY(settings_box.username_entry));
+	hud_buff = gtk_entry_get_buffer(GTK_ENTRY(settings_box.hud_entry));
 
-	username = gtk_entry_buffer_get_text(gtk_buff);
+	username = gtk_entry_buffer_get_text(username_buff);
 	distance = gtk_combo_box_text_get_active_text(settings_box.distance_combo);
+	hud = gtk_entry_buffer_get_text(hud_buff);
 
 	setenv("MCPI_USERNAME", username, 1);
 	setenv("MCPI_RENDER_DISTANCE", distance, 1);
+	setenv("GALLIUM_HUD", hud, 1);
 
 	mcpil_config_set_username(config, username);
 	mcpil_config_set_distance(config, distance);
+	mcpil_config_set_hud(config, hud);
 	mcpil_config_save(config);
 	return;
 }

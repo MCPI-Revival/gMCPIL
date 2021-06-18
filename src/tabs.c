@@ -181,12 +181,15 @@ TAB(Multiplayer, "Multiplayer", "Save", multiplayer_cb, {
 	}
 
 	ip_hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
-	ip_label = gtk_label_new("IP Address:");
+	ip_label = gtk_label_new("IP Address");
 	ip_entry = gtk_entry_new_with_buffer(gtk_entry_buffer_new(default_ip, strlen(default_ip)));
+	gtk_entry_set_width_chars(GTK_ENTRY(ip_entry), 25);
 
 	port_hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
-	port_label = gtk_label_new("Port:");
+	port_label = gtk_label_new("Port");
 	port_entry = gtk_entry_new_with_buffer(gtk_entry_buffer_new(default_port, strlen(default_port)));
+	gtk_entry_set_width_chars(GTK_ENTRY(port_entry), 25);
+	gtk_entry_set_input_purpose(GTK_ENTRY(port_entry), GTK_INPUT_PURPOSE_DIGITS);
 
 	gtk_box_pack_start(GTK_BOX(ip_hbox), ip_label, FALSE, FALSE, 10);
 	gtk_box_pack_end(GTK_BOX(ip_hbox), ip_entry, FALSE, FALSE, 10);
@@ -203,8 +206,8 @@ TAB(Multiplayer, "Multiplayer", "Save", multiplayer_cb, {
 	gtk_box_pack_start(GTK_BOX(tab), port_hbox, FALSE, FALSE, 0);
 	gtk_box_pack_start(GTK_BOX(tab), notice_label, FALSE, FALSE, 10);
 
-	settings_box.ip_entry = ip_entry;
-	settings_box.port_entry = port_entry;
+	settings_box.ip_entry = GTK_ENTRY(ip_entry);
+	settings_box.port_entry = GTK_ENTRY(port_entry);
 	setenv("GMCPIL_SERVER_IP", default_ip, 1);
 	setenv("GMCPIL_SERVER_PORT", default_port, 1);
 });
@@ -214,15 +217,20 @@ TAB(Settings, "Settings", "Save", settings_cb, {
 	int distance_int;
 	char* default_username;
 	char* default_distance;
+	char* default_hud;
 	GtkWidget* username_hbox;
 	GtkWidget* username_label;
 	GtkWidget* username_entry;
 	GtkWidget* distance_hbox;
 	GtkWidget* distance_label;
 	GtkWidget* distance_combo;
+	GtkWidget* hud_hbox;
+	GtkWidget* hud_label;
+	GtkWidget* hud_entry;
 
 	default_distance = mcpil_config_get_distance(config);
 	default_username = mcpil_config_get_username(config);
+	default_hud = mcpil_config_get_hud(config);
 	if (default_distance == NULL)
 	{
 		default_distance = "Normal";
@@ -233,19 +241,22 @@ TAB(Settings, "Settings", "Save", settings_cb, {
 		default_username = "StevePi";
 		mcpil_config_set_username(config, default_username);
 	}
+	if (default_hud == NULL)
+	{
+		default_hud = "simple,fps";
+		mcpil_config_set_username(config, default_hud);
+	}
 
 	distance_int = get_distance(default_distance);
 
 	username_hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
-	username_label = gtk_label_new("Username:");
-
+	username_label = gtk_label_new("Username");
 	username_entry = gtk_entry_new_with_buffer(gtk_entry_buffer_new(default_username, strlen(default_username)));
+	gtk_entry_set_width_chars(GTK_ENTRY(username_entry), 25);
 
 	distance_hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
-	distance_label = gtk_label_new("Rendering distance:");
-
+	distance_label = gtk_label_new("Rendering distance");
 	distance_combo = gtk_combo_box_text_new();
-
 	while (i < 4)
 	{
 		gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(distance_combo), distances[i]);
@@ -253,20 +264,31 @@ TAB(Settings, "Settings", "Save", settings_cb, {
 	}
 	gtk_combo_box_set_active(GTK_COMBO_BOX(distance_combo), distance_int);
 
+	hud_hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
+	hud_label = gtk_label_new("Gallium HUD options");
+	hud_entry = gtk_entry_new_with_buffer(gtk_entry_buffer_new(default_hud, strlen(default_hud)));
+	gtk_entry_set_width_chars(GTK_ENTRY(hud_entry), 25);
+
 	gtk_box_pack_start(GTK_BOX(username_hbox), username_label, FALSE, FALSE, 10);
-	gtk_box_pack_start(GTK_BOX(username_hbox), username_entry, TRUE, TRUE, 10);
+	gtk_box_pack_end(GTK_BOX(username_hbox), username_entry, FALSE, FALSE, 10);
 
 	gtk_box_pack_start(GTK_BOX(distance_hbox), distance_label, FALSE, FALSE, 10);
-	gtk_box_pack_start(GTK_BOX(distance_hbox), distance_combo, TRUE, TRUE, 10);
+	gtk_box_pack_end(GTK_BOX(distance_hbox), distance_combo, FALSE, FALSE, 10);
+
+	gtk_box_pack_start(GTK_BOX(hud_hbox), hud_label, FALSE, FALSE, 10);
+	gtk_box_pack_end(GTK_BOX(hud_hbox), hud_entry, FALSE, FALSE, 10);
 
 	gtk_box_pack_start(GTK_BOX(tab), username_hbox, FALSE, FALSE, 0);
 	gtk_box_pack_start(GTK_BOX(tab), distance_hbox, FALSE, FALSE, 0);
+	gtk_box_pack_start(GTK_BOX(tab), hud_hbox, FALSE, FALSE, 0);
 
 	settings_box.username_entry = GTK_ENTRY(username_entry);
 	settings_box.distance_combo = GTK_COMBO_BOX_TEXT(distance_combo);
+	settings_box.hud_entry = GTK_ENTRY(hud_entry);
 
 	setenv("MCPI_USERNAME", default_username, 1);
 	setenv("MCPI_RENDER_DISTANCE", distances[distance_int], 1);
+	setenv("GALLIUM_HUD", default_hud, 1);
 });
 
 TAB(About, "Minecraft Pi Launcher", "Help", about_cb, {
@@ -293,7 +315,7 @@ TAB(About, "Minecraft Pi Launcher", "Help", about_cb, {
 	}
 
 	info_label = gtk_label_new(NULL);
-	gtk_label_set_markup(GTK_LABEL(info_label), "<b>" MCPIL_VERSION "</b>\nby all its contributors");
+	gtk_label_set_markup(GTK_LABEL(info_label), "<b>" GMCPIL_VERSION "</b>\nby all its contributors");
 	gtk_label_set_justify(GTK_LABEL(info_label), GTK_JUSTIFY_CENTER);
 
 	link = gtk_link_button_new_with_label(MCPIL_REPO_URL, MCPIL_REPO_URL);

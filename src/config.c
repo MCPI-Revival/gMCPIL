@@ -28,15 +28,16 @@
 #include <json-glib/json-gobject.h>
 #include <config.h>
 
-struct MCPILConfigPrivate
+struct __attribute__((packed)) MCPILConfigPrivate
 {
 	gchar* ip;
 	gchar* port;
 	gchar* username;
 	gchar* features;
 	gchar* distance;
-	gchar* filename;
 	gchar* last_profile;
+	gchar* hud;
+	gchar* filename;
 };
 
 enum
@@ -47,7 +48,9 @@ enum
 	PROP_USERNAME,
 	PROP_FEATURES,
 	PROP_DISTANCE,
-	PROP_LAST_PROFILE
+	PROP_LAST_PROFILE,
+	PROP_HUD,
+	PROP_LAST
 };
 
 G_DEFINE_TYPE_WITH_CODE(MCPILConfig, mcpil_config, G_TYPE_OBJECT, G_ADD_PRIVATE(MCPILConfig))
@@ -83,57 +86,42 @@ static void mcpil_config_class_init(MCPILConfigClass* klass)
 
 	pspec = g_param_spec_string("last_profile", "Last profile", "Last selected profile", NULL, G_PARAM_READWRITE);
 	g_object_class_install_property(gobject_class, PROP_LAST_PROFILE, pspec);
+
+	pspec = g_param_spec_string("hud", "Gallium HUD", "Gallium HUD options", NULL, G_PARAM_READWRITE);
+	g_object_class_install_property(gobject_class, PROP_HUD, pspec);
 	return;
 }
 
 static void mcpil_config_init(MCPILConfig* self)
 {
+	int i = 0;
 	MCPILConfigPrivate* private = MCPIL_CONFIG_PRIVATE(self);
+	gchar** private_gchar = (gchar**)(private);
 
-	private->ip = NULL;
-	private->port = 0;
-	private->username = NULL;
-	private->features = NULL;
-	private->distance = NULL;
-	private->last_profile = NULL;
+	while (i < PROP_LAST - 1)
+	{
+		private_gchar[i] = NULL;
+		i++;
+	}
 	return;
 }
 
 static void mcpil_config_finalize(GObject* obj)
 {
+	int i = 0;
 	MCPILConfig* self = MCPIL_CONFIG(obj);
 	MCPILConfigPrivate* private = MCPIL_CONFIG_PRIVATE(self);
 	GObjectClass* parent_class = G_OBJECT_CLASS(mcpil_config_parent_class);
+	gchar** private_gchar = (gchar**)(private);
 
-	if (private->ip != NULL)
+	while (i < PROP_LAST - 1)
 	{
-		g_free(private->ip);
+		if (private_gchar[i] != NULL)
+		{
+			g_free(private_gchar[i]);
+		}
+		i++;
 	}
-	if (private->port != NULL)
-	{
-		g_free(private->port);
-	}
-	if (private->username != NULL)
-	{
-		g_free(private->username);
-	}
-	if (private->features != NULL)
-	{
-		g_free(private->features);
-	}
-	if (private->distance != NULL)
-	{
-		g_free(private->distance);
-	}
-	if (private->filename != NULL)
-	{
-		g_free(private->filename);
-	}
-	if (private->last_profile != NULL)
-	{
-		g_free(private->last_profile);
-	}
-
 	(*parent_class->finalize)(obj);
 	return;
 }
@@ -144,34 +132,20 @@ GETTER_SETTER(gchar*, username);
 GETTER_SETTER(gchar*, features);
 GETTER_SETTER(gchar*, distance);
 GETTER_SETTER(gchar*, last_profile);
+GETTER_SETTER(gchar*, hud);
 
 static void mcpil_config_set_property(GObject* obj, guint prop_id, const GValue* value, GParamSpec* pspec)
 {
 	MCPILConfig* self = MCPIL_CONFIG(obj);
+	MCPILConfigPrivate* private = MCPIL_CONFIG_PRIVATE(self);
+	gchar** private_gchar = (gchar**)(private);
 
-	switch (prop_id)
+	if (prop_id <= PROP_LAST)
 	{
-		case PROP_IP:
-			mcpil_config_set_ip(self, g_value_get_string(value));
-		break;
-		case PROP_PORT:
-			mcpil_config_set_port(self, g_value_get_string(value));
-		break;
-		case PROP_USERNAME:
-			mcpil_config_set_username(self, g_value_get_string(value));
-		break;
-		case PROP_FEATURES:
-			mcpil_config_set_features(self, g_value_get_string(value));
-		break;
-		case PROP_DISTANCE:
-			mcpil_config_set_distance(self, g_value_get_string(value));
-		break;
-		case PROP_LAST_PROFILE:
-			mcpil_config_set_last_profile(self, g_value_get_string(value));
-		break;
-		default:
-			G_OBJECT_WARN_INVALID_PROPERTY_ID(obj, prop_id, pspec);
-		break;
+		private_gchar[prop_id - 1] = g_strdup((gchar*)g_value_get_string(value));
+	} else
+	{
+		G_OBJECT_WARN_INVALID_PROPERTY_ID(obj, prop_id, pspec);
 	}
 	return;
 }
@@ -180,29 +154,15 @@ static void mcpil_config_get_property(GObject* obj, guint prop_id, GValue* value
 {
 	MCPILConfig* self = MCPIL_CONFIG(obj);
 
-	switch (prop_id)
+	MCPILConfigPrivate* private = MCPIL_CONFIG_PRIVATE(self);
+	gchar** private_gchar = (gchar**)(private);
+
+	if (prop_id <= PROP_LAST)
 	{
-		case PROP_IP:
-			g_value_set_string(value, mcpil_config_get_ip(self));
-		break;
-		case PROP_PORT:
-			g_value_set_string(value, mcpil_config_get_port(self));
-		break;
-		case PROP_USERNAME:
-			g_value_set_string(value, mcpil_config_get_username(self));
-		break;
-		case PROP_FEATURES:
-			g_value_set_string(value, mcpil_config_get_features(self));
-		break;
-		case PROP_DISTANCE:
-			g_value_set_string(value, mcpil_config_get_distance(self));
-		break;
-		case PROP_LAST_PROFILE:
-			g_value_set_string(value, mcpil_config_get_last_profile(self));
-		break;
-		default:
-			G_OBJECT_WARN_INVALID_PROPERTY_ID(obj, prop_id, pspec);
-		break;
+		g_value_set_string(value, private_gchar[prop_id - 1]);
+	} else
+	{
+		G_OBJECT_WARN_INVALID_PROPERTY_ID(obj, prop_id, pspec);
 	}
 	return;
 }
