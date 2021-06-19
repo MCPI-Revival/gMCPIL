@@ -243,7 +243,7 @@ TAB(Settings, "Settings", "Save", settings_cb, {
 	}
 	if (default_hud == NULL)
 	{
-		default_hud = "simple,fps";
+		default_hud = "simple,.x750fps";
 		mcpil_config_set_username(config, default_hud);
 	}
 
