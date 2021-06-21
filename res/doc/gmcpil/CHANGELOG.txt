@@ -1,4 +1,7 @@
-v0.10.1
+v0.10.2:
+ + Fixed bug that mixed HUD and username settings.
+
+v0.10.1:
  + Added Gallium HUD options to the Settings tab.
 
 v0.10.0:

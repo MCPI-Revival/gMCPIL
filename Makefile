@@ -54,7 +54,7 @@ endif
 # for internal functions, so let's "ignore" it.
 CFLAGS+=-Wno-error=deprecated-declarations
 
-VERSION:=0.10.1
+VERSION:=0.10.2
 
 .PHONY: ./build/gmcpil
 

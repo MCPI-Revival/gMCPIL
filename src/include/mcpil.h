@@ -29,8 +29,8 @@
 
 #define GMCPIL_MAJOR 0
 #define GMCPIL_MINOR 10
-#define GMCPIL_PATCH 0
-#define GMCPIL_VERSION "v0.10.1"
+#define GMCPIL_PATCH 2
+#define GMCPIL_VERSION "v0.10.2"
 
 #define STR(str) #str
 #define SAFE_ATOI(str) strtol(str ? str : "", NULL, 10)
