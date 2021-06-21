@@ -1,3 +1,6 @@
+v0.10.1
+ + Added Gallium HUD options to the Settings tab.
+
 v0.10.0:
  + Added MCPI-Reborn 2.0 compatibility.
  + Settings are now saved in a single JSON file.

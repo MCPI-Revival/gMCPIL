@@ -244,7 +244,7 @@ TAB(Settings, "Settings", "Save", settings_cb, {
 	if (default_hud == NULL)
 	{
 		default_hud = "simple,fps";
-		mcpil_config_set_username(config, default_hud);
+		mcpil_config_set_hud(config, default_hud);
 	}
 
 	distance_int = get_distance(default_distance);
