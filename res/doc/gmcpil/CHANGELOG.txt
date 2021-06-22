@@ -1,3 +1,7 @@
+v0.11.0:
+ + Added option to hide the launcher.
+ + Fixed multiplayer on non-ARM systems.
+
 v0.10.2:
  + Fixed bug that mixed HUD and username settings.
 

@@ -18,7 +18,6 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA 02110-1301, USA.
  * 
- * 
  */
 
 #include <stdio.h>
@@ -37,6 +36,7 @@ struct __attribute__((packed)) MCPILConfigPrivate
 	gchar* distance;
 	gchar* last_profile;
 	gchar* hud;
+	gchar* hide;
 	gchar* filename;
 };
 
@@ -50,6 +50,7 @@ enum
 	PROP_DISTANCE,
 	PROP_LAST_PROFILE,
 	PROP_HUD,
+	PROP_HIDE,
 	PROP_LAST
 };
 
@@ -69,26 +70,14 @@ static void mcpil_config_class_init(MCPILConfigClass* klass)
 	gobject_class->get_property = mcpil_config_get_property;
 	gobject_class->set_property = mcpil_config_set_property;
 
-	pspec = g_param_spec_string("ip", "IP", "Server IP", NULL, G_PARAM_READWRITE);
-	g_object_class_install_property(gobject_class, PROP_IP, pspec);
-
-	pspec = g_param_spec_string("port", "Port", "Server Port", NULL, G_PARAM_READWRITE);
-	g_object_class_install_property(gobject_class, PROP_PORT, pspec);
-
-	pspec = g_param_spec_string("username", "Username", "Player name", NULL, G_PARAM_READWRITE);
-	g_object_class_install_property(gobject_class, PROP_USERNAME, pspec);
-
-	pspec = g_param_spec_string("features", "Features", "MCPI-Reborn features", NULL, G_PARAM_READWRITE);
-	g_object_class_install_property(gobject_class, PROP_FEATURES, pspec);
-
-	pspec = g_param_spec_string("distance", "Distance", "Render distance", NULL, G_PARAM_READWRITE);
-	g_object_class_install_property(gobject_class, PROP_DISTANCE, pspec);
-
-	pspec = g_param_spec_string("last_profile", "Last profile", "Last selected profile", NULL, G_PARAM_READWRITE);
-	g_object_class_install_property(gobject_class, PROP_LAST_PROFILE, pspec);
-
-	pspec = g_param_spec_string("hud", "Gallium HUD", "Gallium HUD options", NULL, G_PARAM_READWRITE);
-	g_object_class_install_property(gobject_class, PROP_HUD, pspec);
+	MCPIL_GLIB_PROPERTY("ip", "IP", "Server IP", PROP_IP);
+	MCPIL_GLIB_PROPERTY("port", "Port", "Server Port", PROP_PORT);
+	MCPIL_GLIB_PROPERTY("username", "Username", "Player name", PROP_USERNAME);
+	MCPIL_GLIB_PROPERTY("features", "Features", "MCPI-Reborn features", PROP_FEATURES);
+	MCPIL_GLIB_PROPERTY("distance", "Distance", "Render distance", PROP_DISTANCE);
+	MCPIL_GLIB_PROPERTY("last_profile", "Last profile", "Last selected profile", PROP_LAST_PROFILE);
+	MCPIL_GLIB_PROPERTY("hud", "Gallium HUD", "Gallium HUD options", PROP_HUD);
+	MCPIL_GLIB_PROPERTY("hide", "Hide launcher", "Hide launcher on launch", PROP_HIDE);
 	return;
 }
 
@@ -126,13 +115,14 @@ static void mcpil_config_finalize(GObject* obj)
 	return;
 }
 
-GETTER_SETTER(gchar*, ip);
-GETTER_SETTER(gchar*, port);
-GETTER_SETTER(gchar*, username);
-GETTER_SETTER(gchar*, features);
-GETTER_SETTER(gchar*, distance);
-GETTER_SETTER(gchar*, last_profile);
-GETTER_SETTER(gchar*, hud);
+GETTER_SETTER(ip);
+GETTER_SETTER(port);
+GETTER_SETTER(username);
+GETTER_SETTER(features);
+GETTER_SETTER(distance);
+GETTER_SETTER(last_profile);
+GETTER_SETTER(hud);
+GETTER_SETTER(hide);
 
 static void mcpil_config_set_property(GObject* obj, guint prop_id, const GValue* value, GParamSpec* pspec)
 {

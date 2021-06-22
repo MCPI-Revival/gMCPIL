@@ -18,7 +18,6 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA 02110-1301, USA.
  * 
- * 
  */
 
 #define _GNU_SOURCE /* Required for asprintf */
@@ -111,24 +110,28 @@ void multiplayer_cb(__attribute__((unused)) GtkWidget* button, __attribute__((un
 
 void watch_cb(GPid pid, __attribute__((unused)) int status, __attribute__((unused)) void* udata)
 {
+	gtk_widget_show_all(window);
 	g_spawn_close_pid(pid);
 	return;
 }
 
 void launch_cb(__attribute__((unused)) GtkWidget* button, __attribute__((unused)) void* udata)
 {
-	char* argv[] = {"/bin/sh", "-c", "minecraft-pi-reborn-client", NULL};
+	char* argv[] = {"minecraft-pi-reborn-client", NULL};
 	GPid pid;
 	GError* err = NULL;
 
-	g_spawn_async(NULL, argv, NULL, G_SPAWN_DO_NOT_REAP_CHILD, NULL, NULL, &pid, &err);
+	g_spawn_async(NULL, argv, NULL, G_SPAWN_DO_NOT_REAP_CHILD | G_SPAWN_SEARCH_PATH, NULL, NULL, &pid, &err);
 
 	if (err != NULL)
 	{
 		g_error("Spawning child failed: %s", err->message);
 		return;
 	}
-
+	if (mcpil_config_get_hide(config)[0] == 'T')
+	{
+		gtk_widget_hide(window);
+	}
 	g_child_watch_add(pid, watch_cb, NULL);
 	return;
 }
@@ -152,6 +155,7 @@ void settings_cb(__attribute__((unused)) GtkWidget* button, __attribute__((unuse
 	const char* username;
 	const char* distance;
 	const char* hud;
+	gboolean hide;
 	GtkEntryBuffer* username_buff;
 	GtkEntryBuffer* hud_buff;
 
@@ -161,6 +165,7 @@ void settings_cb(__attribute__((unused)) GtkWidget* button, __attribute__((unuse
 	username = gtk_entry_buffer_get_text(username_buff);
 	distance = gtk_combo_box_text_get_active_text(settings_box.distance_combo);
 	hud = gtk_entry_buffer_get_text(hud_buff);
+	hide = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(settings_box.hide_check));
 
 	setenv("MCPI_USERNAME", username, 1);
 	setenv("MCPI_RENDER_DISTANCE", distance, 1);
@@ -169,6 +174,13 @@ void settings_cb(__attribute__((unused)) GtkWidget* button, __attribute__((unuse
 	mcpil_config_set_username(config, username);
 	mcpil_config_set_distance(config, distance);
 	mcpil_config_set_hud(config, hud);
+	if (hide)
+	{
+		mcpil_config_set_hide(config, "TRUE");
+	} else
+	{
+		mcpil_config_set_hide(config, "FALSE");
+	}
 	mcpil_config_save(config);
 	return;
 }

@@ -18,7 +18,6 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA 02110-1301, USA.
  * 
- * 
  */
 
 #define _GNU_SOURCE /* Required for asprintf */
@@ -218,6 +217,7 @@ TAB(Settings, "Settings", "Save", settings_cb, {
 	char* default_username;
 	char* default_distance;
 	char* default_hud;
+	char* default_hide;
 	GtkWidget* username_hbox;
 	GtkWidget* username_label;
 	GtkWidget* username_entry;
@@ -227,25 +227,13 @@ TAB(Settings, "Settings", "Save", settings_cb, {
 	GtkWidget* hud_hbox;
 	GtkWidget* hud_label;
 	GtkWidget* hud_entry;
+	GtkWidget* hide_hbox;
+	GtkWidget* hide_check;
 
-	default_distance = mcpil_config_get_distance(config);
-	default_username = mcpil_config_get_username(config);
-	default_hud = mcpil_config_get_hud(config);
-	if (default_distance == NULL)
-	{
-		default_distance = "Normal";
-		mcpil_config_set_distance(config, default_distance);
-	}
-	if (default_username == NULL)
-	{
-		default_username = "StevePi";
-		mcpil_config_set_username(config, default_username);
-	}
-	if (default_hud == NULL)
-	{
-		default_hud = "simple,fps";
-		mcpil_config_set_hud(config, default_hud);
-	}
+	MCPIL_SET_DEFAULT(distance, "Normal");
+	MCPIL_SET_DEFAULT(username, "StevePi");
+	MCPIL_SET_DEFAULT(hud, "simple,fps");
+	MCPIL_SET_DEFAULT(hide, "TRUE");
 
 	distance_int = get_distance(default_distance);
 
@@ -269,6 +257,11 @@ TAB(Settings, "Settings", "Save", settings_cb, {
 	hud_entry = gtk_entry_new_with_buffer(gtk_entry_buffer_new(default_hud, strlen(default_hud)));
 	gtk_entry_set_width_chars(GTK_ENTRY(hud_entry), 25);
 
+	hide_hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
+	hide_check = gtk_check_button_new_with_label("Hide launcher");
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(hide_check), default_hide[0] == 'T');
+	gtk_widget_set_size_request(hide_check, -1, 32); // To match rest of input widgets
+
 	gtk_box_pack_start(GTK_BOX(username_hbox), username_label, FALSE, FALSE, 10);
 	gtk_box_pack_end(GTK_BOX(username_hbox), username_entry, FALSE, FALSE, 10);
 
@@ -278,13 +271,17 @@ TAB(Settings, "Settings", "Save", settings_cb, {
 	gtk_box_pack_start(GTK_BOX(hud_hbox), hud_label, FALSE, FALSE, 10);
 	gtk_box_pack_end(GTK_BOX(hud_hbox), hud_entry, FALSE, FALSE, 10);
 
+	gtk_box_pack_end(GTK_BOX(hide_hbox), hide_check, FALSE, FALSE, 10);
+
 	gtk_box_pack_start(GTK_BOX(tab), username_hbox, FALSE, FALSE, 0);
 	gtk_box_pack_start(GTK_BOX(tab), distance_hbox, FALSE, FALSE, 0);
 	gtk_box_pack_start(GTK_BOX(tab), hud_hbox, FALSE, FALSE, 0);
+	gtk_box_pack_start(GTK_BOX(tab), hide_hbox, FALSE, FALSE, 0);
 
 	settings_box.username_entry = GTK_ENTRY(username_entry);
 	settings_box.distance_combo = GTK_COMBO_BOX_TEXT(distance_combo);
 	settings_box.hud_entry = GTK_ENTRY(hud_entry);
+	settings_box.hide_check = GTK_CHECK_BUTTON(hide_check);
 
 	setenv("MCPI_USERNAME", default_username, 1);
 	setenv("MCPI_RENDER_DISTANCE", distances[distance_int], 1);

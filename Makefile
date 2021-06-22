@@ -34,12 +34,14 @@ STRIP:=strip
 ARCH:=$(shell $(CC) -print-multiarch | grep -Eo "arm|aarch|86|x86_64")
 endif
 
+VERSION:=0.11.0
+
 OBJS:=$(patsubst %,build/%.o,mcpil config helpers callbacks tabs)
 MODS:=$(patsubst %,build/lib%.so,multiplayer)
 
 LDFLAGS+=-Wl,--no-undefined
 
-CFLAGS:=-I./src/include -Wall
+CFLAGS:=-DGMCPIL_VERSION=\"v$(VERSION)\" -I./src/include -Wall
 GTK_CFLAGS:=`pkg-config --cflags gtk+-3.0 json-glib-1.0`
 GTK_LDFLAGS:=`pkg-config --libs gtk+-3.0 json-glib-1.0`
 MOD_CONFIG:=--shared -ldl
@@ -53,8 +55,6 @@ endif
 # Some GTK+/GDK-Pixbuf combinations may generate this warning
 # for internal functions, so let's "ignore" it.
 CFLAGS+=-Wno-error=deprecated-declarations
-
-VERSION:=0.10.2
 
 .PHONY: ./build/gmcpil
 
@@ -80,9 +80,9 @@ pack: ./build/gmcpil
 	mkdir -p ./deb/DEBIAN/
 	mkdir -p ./deb/usr/bin/
 	mkdir -p ./deb/usr/share/
-	mkdir -p ./deb/usr/lib/gmcpil/
+	mkdir -p ./deb/opt/minecraft-pi-reborn-client/mods/
 	cp ./build/gmcpil ./deb/usr/bin/
-	cp ./build/lib*.so ./deb/usr/lib/gmcpil/
+	cp ./build/lib*.so ./deb/opt/minecraft-pi-reborn-client/mods/
 	cp -r ./res/. ./deb/usr/share/
 	chmod a+x ./deb/usr/bin/gmcpil
 	@echo "Package: gmcpil" > ./deb/DEBIAN/control

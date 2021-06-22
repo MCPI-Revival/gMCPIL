@@ -18,7 +18,6 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA 02110-1301, USA.
  * 
- * 
  */
 
 #ifndef CONFIG_H
@@ -37,22 +36,37 @@ G_BEGIN_DECLS
 #define VALID_JSON_ARGS(dst, name, parent) \
 	(parent.node != NULL || dst != NULL || name != NULL || JSON_NODE_HOLDS_OBJECT(parent.node) || parent.obj == NULL)
 
-#define GETTER(type, name) type mcpil_config_get_ ## name (MCPILConfig* self) \
+#define GETTER(name) gchar* mcpil_config_get_ ## name (MCPILConfig* self) \
 { \
 	MCPILConfigPrivate* private; \
 	private = MCPIL_CONFIG_PRIVATE(self); \
 	return private->name; \
 }
 
-#define SETTER(type, name) void mcpil_config_set_ ## name (MCPILConfig* self, const type name) \
+#define SETTER(name) void mcpil_config_set_ ## name (MCPILConfig* self, const gchar* name) \
 { \
 	MCPILConfigPrivate* private; \
 	private = MCPIL_CONFIG_PRIVATE(self); \
-	private->name = g_strdup((type)name); \
+	private->name = g_strdup((gchar*)name); \
 	return; \
 }
 
-#define GETTER_SETTER(type, name) GETTER(type, name); SETTER(type, name);
+#define GETTER_SETTER(name) GETTER(name); SETTER(name);
+#define GETTER_SETTER_PROTO(name) \
+gchar* mcpil_config_get_ ## name (MCPILConfig* self) \
+void mcpil_config_set_ ## name (MCPILConfig* self, const gchar* name);
+
+#define MCPIL_GLIB_PROPERTY(id, name, description, prop) \
+	pspec = g_param_spec_string(id, name, description, NULL, G_PARAM_READWRITE); \
+	g_object_class_install_property(gobject_class, prop, pspec);
+
+#define MCPIL_SET_DEFAULT(name, value) \
+	default_##name = mcpil_config_get_##name(config); \
+	if (default_##name == NULL) \
+	{ \
+		default_##name = value; \
+		mcpil_config_set_##name(config, default_##name); \
+	}
 
 typedef struct MCPILConfigPrivate MCPILConfigPrivate;
 
@@ -75,8 +89,9 @@ void mcpil_config_set_port(MCPILConfig* self, const gchar* port);
 void mcpil_config_set_username(MCPILConfig* self, const gchar* username);
 void mcpil_config_set_features(MCPILConfig* self, const gchar* features);
 void mcpil_config_set_distance(MCPILConfig* self, const gchar* distance);
-void mcpil_config_set_last_profile(MCPILConfig* self, const gchar* profile);
+void mcpil_config_set_last_profile(MCPILConfig* self, const gchar* last_profile);
 void mcpil_config_set_hud(MCPILConfig* self, const gchar* hud);
+void mcpil_config_set_hide(MCPILConfig* self, const gchar* hide);
 
 gchar* mcpil_config_get_ip(MCPILConfig* self);
 gchar* mcpil_config_get_port(MCPILConfig* self);
@@ -85,6 +100,7 @@ gchar* mcpil_config_get_features(MCPILConfig* self);
 gchar* mcpil_config_get_distance(MCPILConfig* self);
 gchar* mcpil_config_get_last_profile(MCPILConfig* self);
 gchar* mcpil_config_get_hud(MCPILConfig* self);
+gchar* mcpil_config_get_hide(MCPILConfig* self);
 
 int mcpil_config_save(MCPILConfig* self);
 

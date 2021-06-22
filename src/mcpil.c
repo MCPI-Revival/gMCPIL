@@ -18,7 +18,6 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA 02110-1301, USA.
  * 
- * 
  */
 
 #define _GNU_SOURCE /* Required for asprintf */
@@ -63,7 +62,6 @@ int main(int argc, char* argv[])
 
 	/* Initialize */
 	srand(time(NULL));
-	setenv("LD_PRELOAD", "/usr/lib/gmcpil/libmultiplayer.so", 1);
 	/* This is cursed, but it works:tm: */
 	setenv("GTK_THEME", "Adwaita:dark", 1);
 

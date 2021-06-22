@@ -18,7 +18,6 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA 02110-1301, USA.
  * 
- * 
  */
 
 #ifndef MCPIL_H
@@ -26,11 +25,6 @@
 
 #include <gtk/gtk.h>
 #include <config.h>
-
-#define GMCPIL_MAJOR 0
-#define GMCPIL_MINOR 10
-#define GMCPIL_PATCH 2
-#define GMCPIL_VERSION "v0.10.2"
 
 #define STR(str) #str
 #define SAFE_ATOI(str) strtol(str ? str : "", NULL, 10)
@@ -73,6 +67,7 @@ typedef struct settings_box_t
 	GtkEntry* username_entry;
 	GtkEntry* hud_entry;
 	GtkComboBoxText* distance_combo;
+	GtkCheckButton* hide_check;
 	char* buff;
 } settings_box_t;
 

@@ -18,7 +18,6 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA 02110-1301, USA.
  * 
- * 
  */
 
 #define _GNU_SOURCE /* Required for asprintf */
@@ -48,16 +47,15 @@ int get_features()
 	char* buff;
 	FILE* file;
 
+	file = fopen("/opt/minecraft-pi-reborn-client/available-feature-flags", "r");
+	if (file == NULL)
+	{
+		return -1;
+	}
+
 	buff_sz = 48;
 	buff = (char*)malloc((int)buff_sz + 1);
 	buff[0] = 0x00;
-	file = fopen("/opt/minecraft-pi-reborn-client/available-feature-flags", "r");
-
-	if (file == NULL)
-	{
-		free(buff);
-		return -1;
-	}
 	while ((sz = getline(&buff, &buff_sz, file)) > 0)
 	{
 		FEAT_BOOL(i) = (void*)(intptr_t)(buff[0] == 'T');
@@ -66,6 +64,7 @@ int get_features()
 		FEAT_PTR(i) = strdup(buff + offset);
 		i++;
 	}
+	free(buff);
 	fclose(file);
 	return i;
 }
