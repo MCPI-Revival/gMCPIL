@@ -25,12 +25,14 @@ CC:=clang
 ARM_CC:=clang -target arm-linux-gnueabihf
 LDFLAGS:=-fuse-ld=lld
 STRIP:=llvm-strip
+ARM_STRIP:=${STRIP}
 ARCH:=$(shell $(CC) -dumpmachine | grep -Eo "arm|aarch|86|x86_64")
 else
 CC:=gcc
 ARM_CC:=arm-linux-gnueabihf-gcc
 LDFLAGS:=
 STRIP:=strip
+ARM_STRIP:=arm-linux-gnueabihf-strip
 ARCH:=$(shell $(CC) -print-multiarch | grep -Eo "arm|aarch|86|x86_64")
 endif
 
@@ -41,7 +43,7 @@ MODS:=$(patsubst %,build/lib%.so,multiplayer)
 
 LDFLAGS+=-Wl,--no-undefined
 
-CFLAGS:=-DGMCPIL_VERSION=\"v$(VERSION)\" -I./src/include -Wall
+CFLAGS:=-DGMCPIL_VERSION=\"v$(VERSION)\" -I./src/include -Wall -Wno-address-of-packed-member -Wno-pointer-to-int-cast -Wno-unused-result
 GTK_CFLAGS:=`pkg-config --cflags gtk+-3.0 json-glib-1.0`
 GTK_LDFLAGS:=`pkg-config --libs gtk+-3.0 json-glib-1.0`
 MOD_CONFIG:=--shared -ldl
@@ -70,7 +72,7 @@ endif
 ./build/lib%.so: ./src/mods/%.c
 	$(ARM_CC) -fPIC $< -o $@ $(MOD_CONFIG) $(CFLAGS) $(LDFLAGS)
 ifndef DEBUG
-	$(STRIP) $@
+	$(ARM_STRIP) $@
 endif
 
 mkdir:
