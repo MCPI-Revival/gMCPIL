@@ -40,6 +40,19 @@
 #include <libreborn.h>
 #include <servers.h>
 
+/* I hope this optimizes at least a little bit, or else... */
+#if __GNUC__
+#	define unlikely(x) __builtin_expect(!!(x), 0)
+#elif defined(__has_builtin)
+#	if __has_builtin(__builtin_expect)
+#		define unlikely(x) __builtin_expect(!!(x), 0)
+#	endif
+#endif
+
+#ifndef unlikely
+#	define unlikely(x) (x)
+#endif
+
 int build_sockaddr(server_t* server)
 {
 	struct hostent* host;
@@ -70,7 +83,8 @@ HOOK(sendto, ssize_t, (int sockfd, const void* buf, size_t len, int flags, const
 	struct sockaddr_in* addr = (struct sockaddr_in*)dest_addr;
 
 	ensure_sendto();
-	if (addr->sin_addr.s_addr == (unsigned int) -1 /* This IS intentional, -1 is the equivalent to the broadcast address. */ && ntohs(addr->sin_port) == 19135)
+	/* This IS intentional, -1 is the equivalent to the broadcast address. */
+	if (unlikely(addr->sin_addr.s_addr == (unsigned int)-1 && ntohs(addr->sin_port) == 19135))
 	{
 		while (i < 19139)
 		{

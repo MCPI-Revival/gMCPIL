@@ -38,7 +38,7 @@ To build gMCPIL, you'll need GCC or Clang for the native and `arm-linux-gnueabih
 Assuming a Debian-based distro, you can install them with the following command:
 ```sh
 # For GCC
-sudo apt install gcc gcc-arm-linux-gnueabihf
+sudo apt install gcc build-essential gcc-arm-linux-gnueabihf crossbuild-essential-armhf
 
 # Libraries and other build dependencies
 sudo apt install git make libjson-glib-dev libgtk-3-dev dpkg-dev fakeroot

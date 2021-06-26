@@ -171,13 +171,8 @@ TAB(Multiplayer, "Multiplayer", "Save", multiplayer_cb, {
 	GtkWidget* port_entry;
 	GtkWidget* notice_label;
 
-	default_ip = mcpil_config_get_ip(config);
-	default_port = mcpil_config_get_port(config);
-	if (default_ip == NULL || default_port == NULL)
-	{
-		default_ip = "thebrokenrail.com";
-		default_port = "19132";
-	}
+	MCPIL_SET_DEFAULT(ip, "thebrokenrail.com");
+	MCPIL_SET_DEFAULT(port, "19132");
 
 	ip_hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
 	ip_label = gtk_label_new("IP Address");
@@ -230,7 +225,7 @@ TAB(Settings, "Settings", "Save", settings_cb, {
 	GtkWidget* hide_hbox;
 	GtkWidget* hide_check;
 
-	MCPIL_SET_DEFAULT(distance, "Normal");
+	MCPIL_SET_DEFAULT(distance, "Short");
 	MCPIL_SET_DEFAULT(username, "StevePi");
 	MCPIL_SET_DEFAULT(hud, "simple,fps");
 	MCPIL_SET_DEFAULT(hide, "TRUE");

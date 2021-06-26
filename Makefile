@@ -36,7 +36,7 @@ ARM_STRIP:=arm-linux-gnueabihf-strip
 ARCH:=$(shell $(CC) -print-multiarch | grep -Eo "arm|aarch|86|x86_64")
 endif
 
-VERSION:=0.11.0
+VERSION:=0.11.1
 
 OBJS:=$(patsubst %,build/%.o,mcpil config helpers callbacks tabs)
 MODS:=$(patsubst %,build/lib%.so,multiplayer)

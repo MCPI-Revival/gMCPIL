@@ -1,3 +1,7 @@
+v0.11.1:
+ + Internal code changes.
+ + First official amd64 build.
+
 v0.11.0:
  + Added option to hide the launcher.
  + Fixed multiplayer on non-ARM systems.
