@@ -208,7 +208,6 @@ void activate_cb(GtkApplication* app, __attribute__((unused)) void* udata)
 
 	Play_tab(notebook);
 	Features_tab(notebook);
-	Multiplayer_tab(notebook);
 	Settings_tab(notebook);
 	About_tab(notebook);
 

@@ -36,17 +36,13 @@ ARM_STRIP:=arm-linux-gnueabihf-strip
 ARCH:=$(shell $(CC) -print-multiarch | grep -Eo "arm|aarch|86|x86_64")
 endif
 
-VERSION:=0.11.1
+VERSION:=0.11.2
 
 OBJS:=$(patsubst %,build/%.o,mcpil config helpers callbacks tabs)
-MODS:=$(patsubst %,build/lib%.so,multiplayer)
-
-LDFLAGS+=-Wl,--no-undefined
 
 CFLAGS:=-DGMCPIL_VERSION=\"v$(VERSION)\" -I./src/include -Wall -Wno-address-of-packed-member -Wno-pointer-to-int-cast -Wno-unused-result
-GTK_CFLAGS:=`pkg-config --cflags gtk+-3.0 json-glib-1.0`
-GTK_LDFLAGS:=`pkg-config --libs gtk+-3.0 json-glib-1.0`
-MOD_CONFIG:=--shared -ldl
+CFLAGS+=`pkg-config --cflags gtk+-3.0 json-glib-1.0`
+LDFLAGS+=-Wl,--no-undefined `pkg-config --libs gtk+-3.0 json-glib-1.0`
 
 ifdef DEBUG
 CFLAGS+=-g -Wextra -Werror
@@ -60,20 +56,14 @@ CFLAGS+=-Wno-error=deprecated-declarations
 
 .PHONY: ./build/gmcpil
 
-./build/gmcpil: mkdir $(MODS) $(OBJS)
-	$(CC) -fPIC -fpie $(OBJS) -o $@ $(GTK_LDFLAGS) $(CFLAGS) $(LDFLAGS)
+./build/gmcpil: mkdir $(OBJS)
+	$(CC) -fPIC -fpie $(OBJS) -o $@ $(CFLAGS) $(LDFLAGS)
 ifndef DEBUG
 	$(STRIP) ./build/gmcpil
 endif
 
 ./build/%.o: ./src/%.c ./src/include/*.h
-	$(CC) -fPIC -c $< -o $@ $(GTK_CFLAGS) $(CFLAGS)
-
-./build/lib%.so: ./src/mods/%.c
-	$(ARM_CC) -fPIC $< -o $@ $(MOD_CONFIG) $(CFLAGS) $(LDFLAGS)
-ifndef DEBUG
-	$(ARM_STRIP) $@
-endif
+	$(CC) -fPIC -c $< -o $@ $(CFLAGS)
 
 mkdir:
 	mkdir -p ./build/
@@ -82,9 +72,7 @@ pack: ./build/gmcpil
 	mkdir -p ./deb/DEBIAN/
 	mkdir -p ./deb/usr/bin/
 	mkdir -p ./deb/usr/share/
-	mkdir -p ./deb/opt/minecraft-pi-reborn-client/mods/
 	cp ./build/gmcpil ./deb/usr/bin/
-	cp ./build/lib*.so ./deb/opt/minecraft-pi-reborn-client/mods/
 	cp -r ./res/. ./deb/usr/share/
 	chmod a+x ./deb/usr/bin/gmcpil
 	@echo "Package: gmcpil" > ./deb/DEBIAN/control
