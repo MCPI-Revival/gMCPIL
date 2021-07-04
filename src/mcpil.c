@@ -36,22 +36,73 @@
 #include <config.h>
 #include <splashes.h>
 
-/* Widget variables */
+/* Global variables */
+settings_box_t settings_box;
+GMCPILConfig* config;
 GtkWidget* window;
 
-/* Profiles */
-char* profile_names[5] = {"Classic MCPI", "Modded MCPI", "Modded MCPE", "Optimized MCPE", "Custom Profile"};
-char* profile_descriptions[5] = {
-	"Classic Minecraft Pi Edition.\n(Not Recommended)\nAll optional features disabled.",
-	"Modded Minecraft Pi Edition.\nDefault MCPI-Reborn optional features without Touch GUI.",
-	"Minecraft Pocket Edition.\n(Recommended)\nDefault MCPI-Reborn optional features.",
-	"Optimized Minecraft Pocket Edition.\nDefault MCPI-Reborn optional features with lower quality graphics.",
-	"Custom Profile.\nModify its settings in the Features tab."
-};
-char* features_envs[5] = {""};
+void about_cb(__attribute__((unused)) GtkWidget* button, __attribute__((unused)) void* udata)
+{
+	GdkPixbuf* logo;
+	GtkWidget* about_dialog;
 
-/* Rendering distances */
-char* distances[4] = {"Far", "Normal", "Short", "Tiny"};
+	logo = gtk_icon_theme_load_icon(gtk_icon_theme_get_default(), "gmcpil", 64, GTK_ICON_LOOKUP_NO_SVG, NULL);
+	about_dialog = gtk_about_dialog_new();
+	gtk_about_dialog_set_program_name(GTK_ABOUT_DIALOG(about_dialog), "gMCPIL");
+	gtk_about_dialog_set_version(GTK_ABOUT_DIALOG(about_dialog), GMCPIL_VERSION);
+	gtk_about_dialog_set_logo(GTK_ABOUT_DIALOG(about_dialog), logo);
+	gtk_about_dialog_set_copyright(GTK_ABOUT_DIALOG(about_dialog), GMCPIL_COPYRIGHT);
+	gtk_about_dialog_set_website(GTK_ABOUT_DIALOG(about_dialog), GMCPIL_REPO_URL);
+	gtk_about_dialog_set_comments(GTK_ABOUT_DIALOG(about_dialog), GMCPIL_DESCRIPTION);
+	gtk_dialog_run(GTK_DIALOG(about_dialog));
+	gtk_widget_destroy(about_dialog);
+	return;
+}
+
+void activate_cb(GtkApplication* app, __attribute__((unused)) void* udata)
+{
+	GdkPixbuf* icon;
+	GtkWidget* stack;
+	GtkWidget* switcher;
+	GtkWidget* header;
+	GtkWidget* switcher_box;
+	GtkWidget* about_button;
+
+	window = gtk_application_window_new(app);
+	gtk_window_set_title(GTK_WINDOW(window), "gMCPIL");
+	gtk_window_set_default_size(GTK_WINDOW(window), -1, 375);
+
+	icon = gtk_icon_theme_load_icon(gtk_icon_theme_get_default(), "gmcpil", 32, GTK_ICON_LOOKUP_NO_SVG, NULL);
+	gtk_window_set_icon(GTK_WINDOW(window), icon);
+
+	stack = gtk_stack_new();
+
+	switcher_box = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
+
+	switcher = gtk_stack_switcher_new();
+	gtk_stack_switcher_set_stack(GTK_STACK_SWITCHER(switcher), GTK_STACK(stack));
+
+	about_button = gtk_button_new_from_icon_name("help-about-symbolic", GTK_ICON_SIZE_LARGE_TOOLBAR);
+
+	header = gtk_header_bar_new();
+	gtk_header_bar_set_show_close_button(GTK_HEADER_BAR(header), TRUE);
+	gtk_header_bar_set_custom_title(GTK_HEADER_BAR(header), switcher_box);
+
+	Play_tab(stack);
+	Features_tab(stack);
+	Servers_tab(stack);
+	//Settings_tab(stack);
+
+	gtk_box_pack_start(GTK_BOX(switcher_box), switcher, TRUE, FALSE, 0);
+	gtk_box_pack_end(GTK_BOX(switcher_box), about_button, TRUE, FALSE, 2);
+
+	g_signal_connect(about_button, "clicked", G_CALLBACK(about_cb), NULL);
+
+	gtk_window_set_titlebar(GTK_WINDOW(window), header);
+	gtk_container_add(GTK_CONTAINER(window), stack);
+	gtk_widget_show_all(window);
+	return;
+}
 
 int main(int argc, char* argv[])
 {
@@ -66,7 +117,7 @@ int main(int argc, char* argv[])
 	setenv("GTK_THEME", "Adwaita:dark", 1);
 
 	asprintf(&config_path, "%s/.minecraft-pi/gmcpil.json", getenv("HOME"));
-	config = mcpil_config_new(config_path);
+	config = gmcpil_config_new(config_path);
 	free(config_path);
 
 	gtk_init(&argc, &argv);
@@ -93,8 +144,9 @@ int main(int argc, char* argv[])
 	{
 		free(settings_box.buff);
 	}
+	free(servers_path);
 
-	mcpil_config_save(config);
+	gmcpil_config_save(config);
 	g_object_unref(config);
 	return rt;
 }

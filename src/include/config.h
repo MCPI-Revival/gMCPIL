@@ -28,81 +28,74 @@
 
 G_BEGIN_DECLS
 
-#define MCPIL_TYPE_CONFIG mcpil_config_get_type()
-#define MCPIL_CONFIG(obj) G_TYPE_CHECK_INSTANCE_CAST(obj, MCPIL_TYPE_CONFIG, MCPILConfig)
-#define MCPIL_IS_CONFIG(obj) G_TYPE_CHECK_INSTANCE_TYPE(obj, MCPIL_TYPE_CONFIG)
-#define MCPIL_CONFIG_PRIVATE(obj) mcpil_config_get_instance_private(obj)
+#define GMCPIL_TYPE_CONFIG gmcpil_config_get_type()
+#define GMCPIL_CONFIG(obj) G_TYPE_CHECK_INSTANCE_CAST(obj, GMCPIL_TYPE_CONFIG, GMCPILConfig)
+#define GMCPIL_IS_CONFIG(obj) G_TYPE_CHECK_INSTANCE_TYPE(obj, GMCPIL_TYPE_CONFIG)
+#define GMCPIL_CONFIG_PRIVATE(obj) gmcpil_config_get_instance_private(obj)
 
 #define VALID_JSON_ARGS(dst, name, parent) \
 	(parent.node != NULL || dst != NULL || name != NULL || JSON_NODE_HOLDS_OBJECT(parent.node) || parent.obj == NULL)
 
-#define GETTER(name) gchar* mcpil_config_get_ ## name (MCPILConfig* self) \
+#define GMCPIL_GETTER(name) gchar* gmcpil_config_get_ ## name (GMCPILConfig* self) \
 { \
-	MCPILConfigPrivate* private; \
-	private = MCPIL_CONFIG_PRIVATE(self); \
+	GMCPILConfigPrivate* private; \
+	private = GMCPIL_CONFIG_PRIVATE(self); \
 	return private->name; \
 }
 
-#define SETTER(name) void mcpil_config_set_ ## name (MCPILConfig* self, const gchar* name) \
+#define GMCPIL_SETTER(name) void gmcpil_config_set_ ## name (GMCPILConfig* self, const gchar* name) \
 { \
-	MCPILConfigPrivate* private; \
-	private = MCPIL_CONFIG_PRIVATE(self); \
+	GMCPILConfigPrivate* private; \
+	private = GMCPIL_CONFIG_PRIVATE(self); \
 	private->name = g_strdup((gchar*)name); \
 	return; \
 }
 
-#define GETTER_SETTER(name) GETTER(name); SETTER(name);
-#define GETTER_SETTER_PROTO(name) \
-gchar* mcpil_config_get_ ## name (MCPILConfig* self) \
-void mcpil_config_set_ ## name (MCPILConfig* self, const gchar* name);
+#define GMCPIL_GETTER_SETTER(name) GMCPIL_GETTER(name); GMCPIL_SETTER(name);
 
-#define MCPIL_GLIB_PROPERTY(id, name, description, prop) \
+#define GMCPIL_GLIB_PROPERTY(id, name, description, prop) \
 	pspec = g_param_spec_string(id, name, description, NULL, G_PARAM_READWRITE); \
 	g_object_class_install_property(gobject_class, prop, pspec);
 
-#define MCPIL_SET_DEFAULT(name, value) \
-	default_##name = mcpil_config_get_##name(config); \
+#define GMCPIL_SET_DEFAULT(name, value) \
+	default_##name = gmcpil_config_get_##name(config); \
 	if (default_##name == NULL) \
 	{ \
 		default_##name = value; \
-		mcpil_config_set_##name(config, default_##name); \
+		gmcpil_config_set_##name(config, default_##name); \
 	}
 
-typedef struct MCPILConfigPrivate MCPILConfigPrivate;
+typedef struct GMCPILConfigPrivate GMCPILConfigPrivate;
 
-typedef struct MCPILConfig
+typedef struct GMCPILConfig
 {
 	GObject parent;
-} MCPILConfig;
+} GMCPILConfig;
 
-typedef struct MCPILConfigClass
+typedef struct GMCPILConfigClass
 {
 	GObjectClass parent_class;
-} MCPILConfigClass;
+} GMCPILConfigClass;
 
-GType mcpil_config_get_type() G_GNUC_CONST;
+GType gmcpil_config_get_type() G_GNUC_CONST;
 
-MCPILConfig* mcpil_config_new(gchar* filename);
+GMCPILConfig* gmcpil_config_new(gchar* filename);
 
-void mcpil_config_set_ip(MCPILConfig* self, const gchar* ip);
-void mcpil_config_set_port(MCPILConfig* self, const gchar* port);
-void mcpil_config_set_username(MCPILConfig* self, const gchar* username);
-void mcpil_config_set_features(MCPILConfig* self, const gchar* features);
-void mcpil_config_set_distance(MCPILConfig* self, const gchar* distance);
-void mcpil_config_set_last_profile(MCPILConfig* self, const gchar* last_profile);
-void mcpil_config_set_hud(MCPILConfig* self, const gchar* hud);
-void mcpil_config_set_hide(MCPILConfig* self, const gchar* hide);
+void gmcpil_config_set_username(GMCPILConfig* self, const gchar* username);
+void gmcpil_config_set_features(GMCPILConfig* self, const gchar* features);
+void gmcpil_config_set_distance(GMCPILConfig* self, const gchar* distance);
+void gmcpil_config_set_last_profile(GMCPILConfig* self, const gchar* last_profile);
+void gmcpil_config_set_hud(GMCPILConfig* self, const gchar* hud);
+void gmcpil_config_set_hide(GMCPILConfig* self, const gchar* hide);
 
-gchar* mcpil_config_get_ip(MCPILConfig* self);
-gchar* mcpil_config_get_port(MCPILConfig* self);
-gchar* mcpil_config_get_username(MCPILConfig* self);
-gchar* mcpil_config_get_features(MCPILConfig* self);
-gchar* mcpil_config_get_distance(MCPILConfig* self);
-gchar* mcpil_config_get_last_profile(MCPILConfig* self);
-gchar* mcpil_config_get_hud(MCPILConfig* self);
-gchar* mcpil_config_get_hide(MCPILConfig* self);
+gchar* gmcpil_config_get_username(GMCPILConfig* self);
+gchar* gmcpil_config_get_features(GMCPILConfig* self);
+gchar* gmcpil_config_get_distance(GMCPILConfig* self);
+gchar* gmcpil_config_get_last_profile(GMCPILConfig* self);
+gchar* gmcpil_config_get_hud(GMCPILConfig* self);
+gchar* gmcpil_config_get_hide(GMCPILConfig* self);
 
-int mcpil_config_save(MCPILConfig* self);
+int gmcpil_config_save(GMCPILConfig* self);
 
 G_END_DECLS
 

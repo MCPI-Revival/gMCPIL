@@ -26,7 +26,7 @@
 
 #include <stdlib.h>
 
-char* splashes[41];
+extern char* splashes[41];
 
 #ifdef DEFINE_SPLASHES
 char* splashes[41] = {

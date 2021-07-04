@@ -36,13 +36,13 @@ ARM_STRIP:=arm-linux-gnueabihf-strip
 ARCH:=$(shell $(CC) -print-multiarch | grep -Eo "arm|aarch|86|x86_64")
 endif
 
-VERSION:=0.11.2
+VERSION:=0.12.0
 
-OBJS:=$(patsubst %,build/%.o,mcpil config helpers callbacks tabs)
+OBJS:=$(patsubst %,build/%.o,mcpil config features play servers)
 
 CFLAGS:=-DGMCPIL_VERSION=\"v$(VERSION)\" -I./src/include -Wall -Wno-address-of-packed-member -Wno-pointer-to-int-cast -Wno-unused-result
-CFLAGS+=`pkg-config --cflags gtk+-3.0 json-glib-1.0`
-LDFLAGS+=-Wl,--no-undefined `pkg-config --libs gtk+-3.0 json-glib-1.0`
+CFLAGS+=$(shell pkg-config --cflags gtk+-3.0 json-glib-1.0)
+LDFLAGS+=-Wl,--no-undefined $(shell pkg-config --libs gtk+-3.0 json-glib-1.0)
 
 ifdef DEBUG
 CFLAGS+=-g -Wextra -Werror
@@ -63,7 +63,7 @@ ifndef DEBUG
 endif
 
 ./build/%.o: ./src/%.c ./src/include/*.h
-	$(CC) -fPIC -c $< -o $@ $(CFLAGS)
+	$(CC) -fPIC -fpie -c $< -o $@ $(CFLAGS)
 
 mkdir:
 	mkdir -p ./build/
@@ -88,7 +88,7 @@ else
 	@echo "Architecture: armhf" >> ./deb/DEBIAN/control
 endif
 	@echo "Section: contrib/misc" >> ./deb/DEBIAN/control
-	@echo "Depends: libc6 (>= 2.28), minecraft-pi-reborn-client (>= 2.0), libgtk-3-0, libjson-glib-1.0-0" >> ./deb/DEBIAN/control
+	@echo "Depends: libc6 (>= 2.28), minecraft-pi-reborn-client (>= 2.1.0), libgtk-3-0, libjson-glib-1.0-0" >> ./deb/DEBIAN/control
 	@echo "Maintainer: Alvarito050506 <donfrutosgomez@gmail.com>" >> ./deb/DEBIAN/control
 	@echo "Homepage: https://mcpirevival.tk" >> ./deb/DEBIAN/control
 	@echo "Vcs-Browser: https://github.com/MCPI-Revival/gMCPIL" >> ./deb/DEBIAN/control
@@ -101,4 +101,4 @@ endif
 clean:
 	rm -rf ./deb/
 	rm -rf ./build/
-	rm -f ./gmcpil_*-*.deb
+	rm -f ./gmcpil_*.deb

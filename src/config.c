@@ -1,5 +1,5 @@
 /*
- * config.c
+ * config.c - GMCPILConfig class
  * 
  * Copyright 2021 Alvarito050506 <donfrutosgomez@gmail.com>
  * 
@@ -27,10 +27,8 @@
 #include <json-glib/json-gobject.h>
 #include <config.h>
 
-struct __attribute__((packed)) MCPILConfigPrivate
+struct __attribute__((packed)) GMCPILConfigPrivate
 {
-	gchar* ip;
-	gchar* port;
 	gchar* username;
 	gchar* features;
 	gchar* distance;
@@ -43,8 +41,6 @@ struct __attribute__((packed)) MCPILConfigPrivate
 enum
 {
 	PROP_NULL,
-	PROP_IP,
-	PROP_PORT,
 	PROP_USERNAME,
 	PROP_FEATURES,
 	PROP_DISTANCE,
@@ -54,37 +50,35 @@ enum
 	PROP_LAST
 };
 
-G_DEFINE_TYPE_WITH_CODE(MCPILConfig, mcpil_config, G_TYPE_OBJECT, G_ADD_PRIVATE(MCPILConfig))
+G_DEFINE_TYPE_WITH_CODE(GMCPILConfig, gmcpil_config, G_TYPE_OBJECT, G_ADD_PRIVATE(GMCPILConfig))
 
-static void mcpil_config_finalize(GObject* obj);
-static void mcpil_config_set_property(GObject* obj, guint prop_id, const GValue* value, GParamSpec* pspec);
-static void mcpil_config_get_property(GObject* obj, guint prop_id, GValue* value, GParamSpec* pspec);
+static void gmcpil_config_finalize(GObject* obj);
+static void gmcpil_config_set_property(GObject* obj, guint prop_id, const GValue* value, GParamSpec* pspec);
+static void gmcpil_config_get_property(GObject* obj, guint prop_id, GValue* value, GParamSpec* pspec);
 
-static void mcpil_config_class_init(MCPILConfigClass* klass)
+static void gmcpil_config_class_init(GMCPILConfigClass* klass)
 {
 	GObjectClass* gobject_class = G_OBJECT_CLASS(klass);
 	GParamSpec* pspec;
 
-	gobject_class->finalize = mcpil_config_finalize;
+	gobject_class->finalize = gmcpil_config_finalize;
 
-	gobject_class->get_property = mcpil_config_get_property;
-	gobject_class->set_property = mcpil_config_set_property;
+	gobject_class->get_property = gmcpil_config_get_property;
+	gobject_class->set_property = gmcpil_config_set_property;
 
-	MCPIL_GLIB_PROPERTY("ip", "IP", "Server IP", PROP_IP);
-	MCPIL_GLIB_PROPERTY("port", "Port", "Server Port", PROP_PORT);
-	MCPIL_GLIB_PROPERTY("username", "Username", "Player name", PROP_USERNAME);
-	MCPIL_GLIB_PROPERTY("features", "Features", "MCPI-Reborn features", PROP_FEATURES);
-	MCPIL_GLIB_PROPERTY("distance", "Distance", "Render distance", PROP_DISTANCE);
-	MCPIL_GLIB_PROPERTY("last_profile", "Last profile", "Last selected profile", PROP_LAST_PROFILE);
-	MCPIL_GLIB_PROPERTY("hud", "Gallium HUD", "Gallium HUD options", PROP_HUD);
-	MCPIL_GLIB_PROPERTY("hide", "Hide launcher", "Hide launcher on launch", PROP_HIDE);
+	GMCPIL_GLIB_PROPERTY("username", "Username", "Player name", PROP_USERNAME);
+	GMCPIL_GLIB_PROPERTY("features", "Features", "MCPI-Reborn features", PROP_FEATURES);
+	GMCPIL_GLIB_PROPERTY("distance", "Distance", "Render distance", PROP_DISTANCE);
+	GMCPIL_GLIB_PROPERTY("last_profile", "Last profile", "Last selected profile", PROP_LAST_PROFILE);
+	GMCPIL_GLIB_PROPERTY("hud", "Gallium HUD", "Gallium HUD options", PROP_HUD);
+	GMCPIL_GLIB_PROPERTY("hide", "Hide launcher", "Hide launcher on launch", PROP_HIDE);
 	return;
 }
 
-static void mcpil_config_init(MCPILConfig* self)
+static void gmcpil_config_init(GMCPILConfig* self)
 {
 	int i = 0;
-	MCPILConfigPrivate* private = MCPIL_CONFIG_PRIVATE(self);
+	GMCPILConfigPrivate* private = GMCPIL_CONFIG_PRIVATE(self);
 	gchar** private_gchar = (gchar**)(private);
 
 	while (i < PROP_LAST - 1)
@@ -95,12 +89,12 @@ static void mcpil_config_init(MCPILConfig* self)
 	return;
 }
 
-static void mcpil_config_finalize(GObject* obj)
+static void gmcpil_config_finalize(GObject* obj)
 {
 	int i = 0;
-	MCPILConfig* self = MCPIL_CONFIG(obj);
-	MCPILConfigPrivate* private = MCPIL_CONFIG_PRIVATE(self);
-	GObjectClass* parent_class = G_OBJECT_CLASS(mcpil_config_parent_class);
+	GMCPILConfig* self = GMCPIL_CONFIG(obj);
+	GMCPILConfigPrivate* private = GMCPIL_CONFIG_PRIVATE(self);
+	GObjectClass* parent_class = G_OBJECT_CLASS(gmcpil_config_parent_class);
 	gchar** private_gchar = (gchar**)(private);
 
 	while (i < PROP_LAST - 1)
@@ -115,19 +109,17 @@ static void mcpil_config_finalize(GObject* obj)
 	return;
 }
 
-GETTER_SETTER(ip);
-GETTER_SETTER(port);
-GETTER_SETTER(username);
-GETTER_SETTER(features);
-GETTER_SETTER(distance);
-GETTER_SETTER(last_profile);
-GETTER_SETTER(hud);
-GETTER_SETTER(hide);
+GMCPIL_GETTER_SETTER(username);
+GMCPIL_GETTER_SETTER(features);
+GMCPIL_GETTER_SETTER(distance);
+GMCPIL_GETTER_SETTER(last_profile);
+GMCPIL_GETTER_SETTER(hud);
+GMCPIL_GETTER_SETTER(hide);
 
-static void mcpil_config_set_property(GObject* obj, guint prop_id, const GValue* value, GParamSpec* pspec)
+static void gmcpil_config_set_property(GObject* obj, guint prop_id, const GValue* value, GParamSpec* pspec)
 {
-	MCPILConfig* self = MCPIL_CONFIG(obj);
-	MCPILConfigPrivate* private = MCPIL_CONFIG_PRIVATE(self);
+	GMCPILConfig* self = GMCPIL_CONFIG(obj);
+	GMCPILConfigPrivate* private = GMCPIL_CONFIG_PRIVATE(self);
 	gchar** private_gchar = (gchar**)(private);
 
 	if (prop_id <= PROP_LAST)
@@ -140,11 +132,10 @@ static void mcpil_config_set_property(GObject* obj, guint prop_id, const GValue*
 	return;
 }
 
-static void mcpil_config_get_property(GObject* obj, guint prop_id, GValue* value, GParamSpec* pspec)
+static void gmcpil_config_get_property(GObject* obj, guint prop_id, GValue* value, GParamSpec* pspec)
 {
-	MCPILConfig* self = MCPIL_CONFIG(obj);
-
-	MCPILConfigPrivate* private = MCPIL_CONFIG_PRIVATE(self);
+	GMCPILConfig* self = GMCPIL_CONFIG(obj);
+	GMCPILConfigPrivate* private = GMCPIL_CONFIG_PRIVATE(self);
 	gchar** private_gchar = (gchar**)(private);
 
 	if (prop_id <= PROP_LAST)
@@ -157,39 +148,13 @@ static void mcpil_config_get_property(GObject* obj, guint prop_id, GValue* value
 	return;
 }
 
-MCPILConfig* mcpil_config_new_from_file(gchar* filename, GError** err)
+GMCPILConfig* gmcpil_config_new(gchar* filename)
 {
 	int sz;
 	char* buff;
 	FILE* fd;
-	MCPILConfig* self;
-
-	fd = fopen(filename, "a+");
-	if (fd == NULL)
-	{
-		return NULL;
-	}
-
-	fseek(fd, 0, SEEK_END);
-	sz = ftell(fd);
-	fseek(fd, 0, SEEK_SET);
-
-	buff = (char*)malloc(sz);
-	fread(buff, 1, sz, fd);
-
-	self = MCPIL_CONFIG(json_gobject_from_data(MCPIL_TYPE_CONFIG, buff, sz, err));
-	free(buff);
-	fclose(fd);
-	return self;
-}
-
-MCPILConfig* mcpil_config_new(gchar* filename)
-{
-	int sz;
-	char* buff;
-	FILE* fd;
-	MCPILConfig* self;
-	MCPILConfigPrivate* private;
+	GMCPILConfig* self;
+	GMCPILConfigPrivate* private;
 	GObject* obj;
 	GError* err = NULL;
 
@@ -203,7 +168,7 @@ MCPILConfig* mcpil_config_new(gchar* filename)
 	sz = ftell(fd);
 	fseek(fd, 0, SEEK_SET);
 
-	if (sz <= 2)
+	if (sz <= 13) /* {"ip":"a.co"} */
 	{
 		buff = (char*)malloc(2);
 		buff[0] = '{';
@@ -211,18 +176,18 @@ MCPILConfig* mcpil_config_new(gchar* filename)
 		sz = 2;
 	} else
 	{
-		buff = (char*)malloc(sz);
+		buff = (char*)malloc(sz + 1);
 		fread(buff, 1, sz, fd);
 	}
 
-	obj = json_gobject_from_data(MCPIL_TYPE_CONFIG, buff, sz, &err);
+	obj = json_gobject_from_data(GMCPIL_TYPE_CONFIG, buff, sz, &err);
 	if (err != NULL)
 	{
 		err = NULL;
-		obj = g_object_new(MCPIL_TYPE_CONFIG, 0);
+		obj = g_object_new(GMCPIL_TYPE_CONFIG, 0);
 	}
-	self = MCPIL_CONFIG(obj);
-	private = MCPIL_CONFIG_PRIVATE(self);
+	self = GMCPIL_CONFIG(obj);
+	private = GMCPIL_CONFIG_PRIVATE(self);
 	private->filename = g_strdup(filename);
 
 	free(buff);
@@ -230,11 +195,11 @@ MCPILConfig* mcpil_config_new(gchar* filename)
 	return self;
 }
 
-int mcpil_config_save(MCPILConfig* self)
+int gmcpil_config_save(GMCPILConfig* self)
 {
 	char* buff;
 	FILE* fd;
-	MCPILConfigPrivate* private = MCPIL_CONFIG_PRIVATE(self);
+	GMCPILConfigPrivate* private = GMCPIL_CONFIG_PRIVATE(self);
 
 	fd = fopen(private->filename, "w");
 	if (fd == NULL)

@@ -1,5 +1,5 @@
 /*
- * mcpil.h - MCPIL GTK+ PoC/Edition
+ * mcpil.h - gMCPIL main header
  * 
  * Copyright 2021 Alvarito050506 <donfrutosgomez@gmail.com>
  * 
@@ -20,8 +20,8 @@
  * 
  */
 
-#ifndef MCPIL_H
-#define MCPIL_H
+#ifndef GMCPIL_H
+#define GMCPIL_H
 
 #include <gtk/gtk.h>
 #include <config.h>
@@ -35,86 +35,55 @@
 #define FEAT_STR(i) ((char*)features[i][1])
 #define FEAT_CMP(i, str) (strcmp(FEAT_STR(i), str) == 0)
 
-#define TAB(name_str, title_str, button_str, button_cb, code) GtkWidget* name_str ## _tab(GtkWidget* notebook) \
+#define TAB(name, button_cb, code) GtkWidget* name ## _tab(GtkWidget* stack) \
 { \
 	void* cb_udata = NULL; \
 	GtkWidget* tab = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0); \
-	GtkWidget* title = gtk_label_new(NULL); \
-	GtkWidget* button = gtk_button_new_with_label(button_str); \
-	GtkWidget* title_hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0); \
-	GtkWidget* button_hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0); \
-	gtk_label_set_markup(GTK_LABEL(title), "<span size=\"24000\">" title_str "</span>"); \
-	gtk_box_pack_start(GTK_BOX(title_hbox), title, TRUE, FALSE, 0); \
-	gtk_box_pack_end(GTK_BOX(button_hbox), button, FALSE, FALSE, 0); \
-	gtk_box_pack_start(GTK_BOX(tab), title_hbox, FALSE, FALSE, 8); \
-	gtk_box_pack_end(GTK_BOX(tab), button_hbox, FALSE, FALSE, 0); \
-	gtk_notebook_append_page(GTK_NOTEBOOK(notebook), tab, gtk_label_new(STR(name_str))); \
+	GtkWidget* button = gtk_button_new_with_label("Save"); \
+	GtkWidget* button_hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 2); \
 	code; \
+	gtk_box_pack_end(GTK_BOX(button_hbox), button, FALSE, FALSE, 0); \
+	gtk_box_pack_end(GTK_BOX(tab), button_hbox, FALSE, FALSE, 0); \
+	gtk_stack_add_titled(GTK_STACK(stack), tab, STR(name), STR(name)); \
 	g_signal_connect(button, "clicked", G_CALLBACK(button_cb), cb_udata); \
 	return tab; \
 }
+//gtk_notebook_append_page(GTK_NOTEBOOK(notebook), tab, gtk_label_new(STR(name_str)));
 
-#define MCPIL_REPO_URL "https://github.com/MCPI-Revival/gMCPIL"
-#define MCPIL_FEATURED_NOTICE "<b>Note:</b> TBR's and PBPT servers are now featured servers,\n" \
-	"this means you don't need to add them here to be able to join."
+#define GMCPIL_REPO_URL "https://github.com/MCPI-Revival/gMCPIL"
+#define GMCPIL_COPYRIGHT "Copyright 2021 MCPI-Revival contributors"
+#define GMCPIL_DESCRIPTION "Simple launcher for MCPI-Reborn - GTK+ Edition."
+#define DEFAULT_SERVERS "thebrokenrail.com\npbptanarchy.tk\n"
+#define SERVERS_LABEL "External multiplayer is now built-in into MCPI-Reborn,\n" \
+	"this is a just simple editor for the servers.txt file.\n" \
+	"Each line is an ip:port tuple. If the port is omitted,\n" \
+	"the default (19132) is used.\n"
 
 typedef void* feature_t[2];
 
 typedef struct settings_box_t
 {
-	GtkEntry* ip_entry;
-	GtkEntry* port_entry;
 	GtkEntry* username_entry;
 	GtkEntry* hud_entry;
 	GtkComboBoxText* distance_combo;
+	GtkComboBoxText* profile_combo;
 	GtkCheckButton* hide_check;
 	char* buff;
 } settings_box_t;
 
-feature_t features[24];
-settings_box_t settings_box;
-MCPILConfig* config;
-
-int featc;
-
-/* Play */
-char* get_splash_text();
-void launch_cb(GtkWidget* button, void* udata);
-void select_cb(GtkWidget* list, GtkListBoxRow* row, void* udata);
-
-/* Features */
-int get_features();
-feature_t* get_feature(char* str);
-int set_feature_envs(int feat);
-void features_cb(GtkWidget* button, void* udata);
-void toggle_cb(GtkWidget* check, void* udata);
-
-/* Multiplayer */
-int get_servers(char** ip, char** port);
-void multiplayer_cb(GtkWidget* button, void* udata);
-
-/* Settings */
-int get_distance(char* str);
-void settings_cb(GtkWidget* button, void* udata);
-
-/* About */
-void about_cb(GtkWidget* button, void* udata);
-
-/* Misc/App */
-void activate_cb(GtkApplication* app, void* udata);
+/* Global variables */
+extern int featc;
+extern char* servers_path;
+extern char* features_envs[5];
+extern settings_box_t settings_box;
+extern feature_t features[32];
+extern GMCPILConfig* config;
+extern GtkWidget* window;
 
 /* Tabs */
 GtkWidget* Play_tab(GtkWidget* notebook);
 GtkWidget* Features_tab(GtkWidget* notebook);
-GtkWidget* Multiplayer_tab(GtkWidget* notebook);
+GtkWidget* Servers_tab(GtkWidget* notebook);
 GtkWidget* Settings_tab(GtkWidget* notebook);
-GtkWidget* About_tab(GtkWidget* notebook);
-
-/* Variable declarations */
-GtkWidget* window;
-char* profile_names[5];
-char* profile_descriptions[5];
-char* features_envs[5];
-char* distances[4];
 
 #endif /* MCPIL_H */
