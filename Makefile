@@ -21,18 +21,18 @@
 #  
 
 ifdef USE_CLANG
+ifeq ($(origin CC),default)
 CC:=clang
-ARM_CC:=clang -target arm-linux-gnueabihf
+endif
+STRIP?=llvm-strip
 LDFLAGS:=-fuse-ld=lld
-STRIP:=llvm-strip
-ARM_STRIP:=${STRIP}
 ARCH:=$(shell $(CC) -dumpmachine | grep -Eo "arm|aarch|86|x86_64")
 else
+ifeq ($(origin CC),default)
 CC:=gcc
-ARM_CC:=arm-linux-gnueabihf-gcc
+endif
+STRIP?=strip
 LDFLAGS:=
-STRIP:=strip
-ARM_STRIP:=arm-linux-gnueabihf-strip
 ARCH:=$(shell $(CC) -print-multiarch | grep -Eo "arm|aarch|86|x86_64")
 endif
 
@@ -40,7 +40,7 @@ VERSION:=0.12.0
 
 OBJS:=$(patsubst %,build/%.o,mcpil config features play servers)
 
-CFLAGS:=-DGMCPIL_VERSION=\"v$(VERSION)\" -I./src/include -Wall -Wno-address-of-packed-member -Wno-pointer-to-int-cast -Wno-unused-result
+CFLAGS+=-DGMCPIL_VERSION=\"v$(VERSION)\" -I./src/include -Wall -Wno-address-of-packed-member -Wno-pointer-to-int-cast -Wno-unused-result
 CFLAGS+=$(shell pkg-config --cflags gtk+-3.0 json-glib-1.0)
 LDFLAGS+=-Wl,--no-undefined $(shell pkg-config --libs gtk+-3.0 json-glib-1.0)
 

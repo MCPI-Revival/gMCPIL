@@ -20,6 +20,8 @@
  * 
  */
 
+#define _GNU_SOURCE /* Required for asprintf */
+
 #include <stdio.h>
 #include <string.h>
 
@@ -35,6 +37,7 @@ struct __attribute__((packed)) GMCPILConfigPrivate
 	gchar* last_profile;
 	gchar* hud;
 	gchar* hide;
+	gchar* last_featc;
 	gchar* filename;
 };
 
@@ -47,6 +50,7 @@ enum
 	PROP_LAST_PROFILE,
 	PROP_HUD,
 	PROP_HIDE,
+	PROP_LAST_FEATC,
 	PROP_LAST
 };
 
@@ -72,6 +76,7 @@ static void gmcpil_config_class_init(GMCPILConfigClass* klass)
 	GMCPIL_GLIB_PROPERTY("last_profile", "Last profile", "Last selected profile", PROP_LAST_PROFILE);
 	GMCPIL_GLIB_PROPERTY("hud", "Gallium HUD", "Gallium HUD options", PROP_HUD);
 	GMCPIL_GLIB_PROPERTY("hide", "Hide launcher", "Hide launcher on launch", PROP_HIDE);
+	GMCPIL_GLIB_PROPERTY("last_featc", "Last feature count", "Last MCPI-Reborn feature count", PROP_LAST_FEATC);
 	return;
 }
 
@@ -112,9 +117,10 @@ static void gmcpil_config_finalize(GObject* obj)
 GMCPIL_GETTER_SETTER(username);
 GMCPIL_GETTER_SETTER(features);
 GMCPIL_GETTER_SETTER(distance);
-GMCPIL_GETTER_SETTER(last_profile);
+GMCPIL_INT_GETTER_SETTER(last_profile);
 GMCPIL_GETTER_SETTER(hud);
 GMCPIL_GETTER_SETTER(hide);
+GMCPIL_INT_GETTER_SETTER(last_featc);
 
 static void gmcpil_config_set_property(GObject* obj, guint prop_id, const GValue* value, GParamSpec* pspec)
 {

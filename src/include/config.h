@@ -35,6 +35,7 @@ G_BEGIN_DECLS
 
 #define VALID_JSON_ARGS(dst, name, parent) \
 	(parent.node != NULL || dst != NULL || name != NULL || JSON_NODE_HOLDS_OBJECT(parent.node) || parent.obj == NULL)
+#define SAFE_ATOI(str) strtol(str ? str : "", NULL, 10)
 
 #define GMCPIL_GETTER(name) gchar* gmcpil_config_get_ ## name (GMCPILConfig* self) \
 { \
@@ -51,7 +52,26 @@ G_BEGIN_DECLS
 	return; \
 }
 
+#define GMCPIL_INT_GETTER(name) gint gmcpil_config_get_ ## name (GMCPILConfig* self) \
+{ \
+	GMCPILConfigPrivate* private; \
+	private = GMCPIL_CONFIG_PRIVATE(self); \
+	return SAFE_ATOI(private->name); \
+}
+
+#define GMCPIL_INT_SETTER(name) void gmcpil_config_set_ ## name (GMCPILConfig* self, const gint name) \
+{ \
+	char* tmp; \
+	GMCPILConfigPrivate* private; \
+	asprintf(&tmp, "%i", name); \
+	private = GMCPIL_CONFIG_PRIVATE(self); \
+	private->name = g_strdup((gchar*)tmp); \
+	free(tmp); \
+	return; \
+}
+
 #define GMCPIL_GETTER_SETTER(name) GMCPIL_GETTER(name); GMCPIL_SETTER(name);
+#define GMCPIL_INT_GETTER_SETTER(name) GMCPIL_INT_GETTER(name); GMCPIL_INT_SETTER(name);
 
 #define GMCPIL_GLIB_PROPERTY(id, name, description, prop) \
 	pspec = g_param_spec_string(id, name, description, NULL, G_PARAM_READWRITE); \
@@ -84,16 +104,18 @@ GMCPILConfig* gmcpil_config_new(gchar* filename);
 void gmcpil_config_set_username(GMCPILConfig* self, const gchar* username);
 void gmcpil_config_set_features(GMCPILConfig* self, const gchar* features);
 void gmcpil_config_set_distance(GMCPILConfig* self, const gchar* distance);
-void gmcpil_config_set_last_profile(GMCPILConfig* self, const gchar* last_profile);
+void gmcpil_config_set_last_profile(GMCPILConfig* self, const gint last_profile);
 void gmcpil_config_set_hud(GMCPILConfig* self, const gchar* hud);
 void gmcpil_config_set_hide(GMCPILConfig* self, const gchar* hide);
+void gmcpil_config_set_last_featc(GMCPILConfig* self, const gint last_featc);
 
 gchar* gmcpil_config_get_username(GMCPILConfig* self);
 gchar* gmcpil_config_get_features(GMCPILConfig* self);
 gchar* gmcpil_config_get_distance(GMCPILConfig* self);
-gchar* gmcpil_config_get_last_profile(GMCPILConfig* self);
+gint gmcpil_config_get_last_profile(GMCPILConfig* self);
 gchar* gmcpil_config_get_hud(GMCPILConfig* self);
 gchar* gmcpil_config_get_hide(GMCPILConfig* self);
+gint gmcpil_config_get_last_featc(GMCPILConfig* self);
 
 int gmcpil_config_save(GMCPILConfig* self);
 

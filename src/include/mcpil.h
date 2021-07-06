@@ -27,7 +27,6 @@
 #include <config.h>
 
 #define STR(str) #str
-#define SAFE_ATOI(str) strtol(str ? str : "", NULL, 10)
 
 #define FEAT_BOOL(i) (features[i][0])
 #define FEAT_INT(i) ((int)features[i][0])
@@ -48,7 +47,6 @@
 	g_signal_connect(button, "clicked", G_CALLBACK(button_cb), cb_udata); \
 	return tab; \
 }
-//gtk_notebook_append_page(GTK_NOTEBOOK(notebook), tab, gtk_label_new(STR(name_str)));
 
 #define GMCPIL_REPO_URL "https://github.com/MCPI-Revival/gMCPIL"
 #define GMCPIL_COPYRIGHT "Copyright 2021 MCPI-Revival contributors"
