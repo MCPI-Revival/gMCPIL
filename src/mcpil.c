@@ -91,7 +91,6 @@ void activate_cb(GtkApplication* app, __attribute__((unused)) void* udata)
 	Play_tab(stack);
 	Features_tab(stack);
 	Servers_tab(stack);
-	//Settings_tab(stack);
 
 	gtk_box_pack_start(GTK_BOX(switcher_box), switcher, TRUE, FALSE, 0);
 	gtk_box_pack_end(GTK_BOX(switcher_box), about_button, TRUE, FALSE, 2);
@@ -116,7 +115,7 @@ int main(int argc, char* argv[])
 	/* This is cursed, but it works:tm: */
 	setenv("GTK_THEME", "Adwaita:dark", 1);
 
-	asprintf(&config_path, "%s/.minecraft-pi/gmcpil.json", getenv("HOME"));
+	asprintf(&config_path, "%s/.gmcpil.json", getenv("HOME"));
 	config = gmcpil_config_new(config_path);
 	free(config_path);
 

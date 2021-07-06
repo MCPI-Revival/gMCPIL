@@ -67,21 +67,15 @@ static int get_distance(char* str)
 	return -1;
 }
 
-static void settings_cb(__attribute__((unused)) GtkWidget* button, void* udata)
+static void settings_cb(__attribute__((unused)) GtkWidget* button, __attribute__((unused)) void* udata)
 {
 	int profile;
-	char tmp[2] = {0x00, 0x00};
 	const char* username;
 	const char* distance;
 	const char* hud;
 	gboolean hide;
 	GtkEntryBuffer* username_buff;
 	GtkEntryBuffer* hud_buff;
-
-	if ((int)udata == TRUE)
-	{
-		goto profile;
-	}
 
 	username_buff = gtk_entry_get_buffer(GTK_ENTRY(settings_box.username_entry));
 	hud_buff = gtk_entry_get_buffer(GTK_ENTRY(settings_box.hud_entry));
@@ -106,12 +100,10 @@ static void settings_cb(__attribute__((unused)) GtkWidget* button, void* udata)
 		gmcpil_config_set_hide(config, "FALSE");
 	}
 
-profile:
 	profile = gtk_combo_box_get_active(GTK_COMBO_BOX(settings_box.profile_combo));
 	setenv("MCPI_FEATURE_FLAGS", features_envs[profile], 1);
-	tmp[0] = profile + 0x30;
 
-	gmcpil_config_set_last_profile(config, tmp);
+	gmcpil_config_set_last_profile(config, profile);
 	gmcpil_config_save(config);
 	return;
 }
@@ -129,7 +121,7 @@ static void launch_cb(__attribute__((unused)) GtkWidget* button, __attribute__((
 	GPid pid;
 	GError* err = NULL;
 
-	settings_cb(NULL, (void*)(intptr_t)TRUE);
+	settings_cb(NULL, NULL);
 	g_spawn_async(NULL, argv, NULL, G_SPAWN_DO_NOT_REAP_CHILD | G_SPAWN_SEARCH_PATH, NULL, NULL, &pid, &err);
 
 	if (err != NULL)
@@ -226,7 +218,7 @@ TAB(Play, settings_cb, {
 	profile_hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
 	profile_label = gtk_label_new("Profile");
 	profile_combo = gtk_combo_box_text_new();
-	last_profile = SAFE_ATOI(gmcpil_config_get_last_profile(config));
+	last_profile = gmcpil_config_get_last_profile(config);
 	while (i < 5)
 	{
 		gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(profile_combo), profile_names[i]);

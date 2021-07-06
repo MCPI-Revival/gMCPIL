@@ -67,9 +67,9 @@ static int get_features()
 static int set_feature_envs(int feat)
 {
 	int i = 0;
-	static int sz[3] = {1, 1, 1};
-	static int len[3] = {0, 0, 0};
-	static int tmp[3] = {0, 0, 0};
+	int sz[3] = {1, 1, 1};
+	int len[3] = {0, 0, 0};
+	int tmp[3] = {0, 0, 0};
 
 	while (i < 3)
 	{
@@ -78,16 +78,13 @@ static int set_feature_envs(int feat)
 			i++;
 			continue;
 		}
-		if (i == 2)
+		if (i == 2 && (FEAT_CMP(feat, "Fancy Graphics")
+			|| FEAT_CMP(feat, "Smooth Lighting")
+			|| FEAT_CMP(feat, "Animated Water")
+			|| FEAT_CMP(feat, "Disable gui_blocks Atlas")))
 		{
-			if (FEAT_CMP(feat, "Fancy Graphics")
-				|| FEAT_CMP(feat, "Smooth Lighting")
-				|| FEAT_CMP(feat, "Animated Water")
-				|| FEAT_CMP(feat, "Disable gui_blocks Atlas"))
-			{
-				i++;
-				continue;
-			}
+			i++;
+			continue;
 		}
 		if (FEAT_INT(feat) == TRUE || (i >= 2 && i <= 3 && FEAT_CMP(feat, "Force Mob Spawning")))
 		{
@@ -178,6 +175,7 @@ static void toggle_cb(__attribute__((unused)) GtkWidget* check, void* udata)
 TAB(Features, features_cb, {
 	int i = 0;
 	int last_profile;
+	int last_featc;
 	char* tmp;
 	char* features_buff;
 	GtkWidget* feature_check;
@@ -187,6 +185,8 @@ TAB(Features, features_cb, {
 
 	featc = 0;
 	featc = get_features();
+	last_featc = gmcpil_config_get_last_featc(config);
+	last_profile = gmcpil_config_get_last_profile(config);
 
 	features_envs[1] = (char*)malloc(1);
 	features_envs[2] = (char*)malloc(1);
@@ -202,7 +202,7 @@ TAB(Features, features_cb, {
 	if (features_buff != NULL)
 	{
 		i = 0;
-		while (i < featc)
+		while (i < last_featc)
 		{
 			FEAT_BOOL(i) = FALSE;
 			i++;
@@ -210,7 +210,7 @@ TAB(Features, features_cb, {
 
 		i = 0;
 		tmp = strtok(features_buff, "|");
-		while (tmp != NULL && i < featc)
+		while (tmp != NULL && i < last_featc)
 		{
 			feature = get_feature(tmp);
 			if (feature != NULL)
@@ -244,8 +244,8 @@ TAB(Features, features_cb, {
 	}
 
 	features_cb(NULL, (void*)TRUE);
+	gmcpil_config_set_last_featc(config, featc);
 	gmcpil_config_set_features(config, features_envs[4]);
-	last_profile = SAFE_ATOI(gmcpil_config_get_last_profile(config));
 	setenv("MCPI_FEATURE_FLAGS", features_envs[last_profile], 1);
 	gtk_container_add(GTK_CONTAINER(scroll), vbox);
 	gtk_box_pack_start(GTK_BOX(tab), scroll, TRUE, TRUE, 0);
