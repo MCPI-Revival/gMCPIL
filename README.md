@@ -1,16 +1,15 @@
 <h1 align="center">gMCPIL</h1>
 <p align="center">
-	Simple launcher for Minecraft: Pi Edition and <a href="https://gitea.thebrokenrail.com/TheBrokenRail/minecraft-pi-reborn/">MCPI-Reborn</a> - GTK+ Edition.
+	Simple launcher for Minecraft: Pi Edition and <a href="https://gitea.thebrokenrail.com/TheBrokenRail/minecraft-pi-reborn/">MCPI-Reborn</a> - Vala/GTK+ Edition.
 </p>
 <p align="center">
 	<a href="https://github.com/MCPI-Revival/gMCPIL/blob/master/LICENSE">
-		<img src="https://img.shields.io/github/license/MCPI-Devs/MCPIL?label=License" alt="GPL-2.0"></img>
+		<img src="https://img.shields.io/github/license/MCPI-Revival/gMCPIL?label=License" alt="GPL-2.0"></img>
 	</a>
 	<a href="https://github.com/MCPI-Revival/gMCPIL/releases/latest">
 		<img src="https://img.shields.io/github/v/release/MCPI-Revival/gMCPIL" alt="Latest release"></img>
 	</a>
 </p>
-
 
 <p align="center">
 	<img src="https://raw.githubusercontent.com/MCPI-Revival/gMCPIL/master/screenshot.png" alt="screenshot"></img>
@@ -34,36 +33,23 @@ sudo apt install gmcpil
 You can also download and install it from the [releases](https://github.com/MCPI-Revival/gMCPIL/releases) section.
 
 ### Compiling
-To build gMCPIL, you'll need GCC or Clang for the native and `arm-linux-gnueabihf` targets, plus some additional packages.
-Assuming a Debian-based distro, you can install them with the following command:
-```sh
-# For GCC
-sudo apt install gcc build-essential gcc-arm-linux-gnueabihf crossbuild-essential-armhf
-
-# Libraries and other build dependencies
-sudo apt install git make libjson-glib-dev libgtk-3-dev dpkg-dev fakeroot
-```
+To build gMCPIL, you'll need Vala, a C compiler, and some additional packages.
+Assuming a Debian-based distro, you can install them running the commands listed
+[here](https://github.com/MCPI-Revival/gMCPIL/blob/master/ci.sh#L7-L13) as root.
 
 After installing the build dependencies, you can clone the repo and build gMCPIL:
 ```sh
 git clone https://github.com/MCPI-Revival/gMCPIL
 cd gMCPIL
 
-make # Build gMCPIL and mods
+make # Build gMCPIL
 make pack # Make a Debian package
 ```
 
-You can also set the `DEBUG` and `USE_CLANG` environment variables to add debug symbols to the executable
-and build using Clang instead of GCC, respectively.
-
-## Features
- + Full MCPI-Reborn integration
- + Proxy-free multiplayer
- + Featured servers
- + Coming soon: More stuff
+You can also set the `DEBUG` environment variable to add debug symbols to the executable.
 
 ## Changelog
-See the [CHANGELOG.txt](https://github.com/MCPI-Revival/gMCPIL/blob/master/res/doc/gmcpil/CHANGELOG.txt) file.
+See the [CHANGELOG.txt](https://github.com/MCPI-Revival/gMCPIL/blob/master/res/usr/share/doc/gmcpil/CHANGELOG.txt) file.
 
 ## Licensing
 All the code of this project is licensed under the [GNU General Public License version 2.0](https://github.com/Alvarito050506/MCPIL/blob/master/LICENSE) (GPL-2.0).
