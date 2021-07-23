@@ -1,0 +1,13 @@
+Package: gmcpil
+Version: {{VERSION}}
+Priority: optional
+Architecture: {{ARCH}}
+Section: contrib/misc
+Depends: libc6 (>= 2.28), minecraft-pi-reborn-client (>= 2.1.0), libgtk-3-0, libjson-glib-1.0-0
+Maintainer: Alvarito050506 <donfrutosgomez@gmail.com>
+Homepage: https://mcpirevival.tk
+Vcs-Browser: https://github.com/MCPI-Revival/gMCPIL
+Vcs-Git: https://github.com/MCPI-Revival/gMCPIL.git
+Description: Simple launcher for Minecraft: Pi Edition - GTK+ Edition.
+ Simple GUI launcher for Minecraft: Pi Edition and MCPI-Reborn,
+ rewritten in Vala using GTK+ 3.
