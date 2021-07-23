@@ -1,5 +1,7 @@
 # Builds
 build/
+*.c
+*.o
 
 # Debian
 *.deb

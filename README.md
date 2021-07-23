@@ -1,6 +1,6 @@
 <h1 align="center">gMCPIL</h1>
 <p align="center">
-	Simple launcher for Minecraft: Pi Edition and <a href="https://gitea.thebrokenrail.com/TheBrokenRail/minecraft-pi-reborn/">MCPI-Reborn</a> - GTK+ Edition.
+	Simple launcher for Minecraft: Pi Edition and <a href="https://gitea.thebrokenrail.com/TheBrokenRail/minecraft-pi-reborn/">MCPI-Reborn</a> - Vala/GTK+ Edition.
 </p>
 <p align="center">
 	<a href="https://github.com/MCPI-Revival/gMCPIL/blob/master/LICENSE">
@@ -10,7 +10,6 @@
 		<img src="https://img.shields.io/github/v/release/MCPI-Revival/gMCPIL" alt="Latest release"></img>
 	</a>
 </p>
-
 
 <p align="center">
 	<img src="https://raw.githubusercontent.com/MCPI-Revival/gMCPIL/master/screenshot.png" alt="screenshot"></img>
@@ -34,11 +33,11 @@ sudo apt install gmcpil
 You can also download and install it from the [releases](https://github.com/MCPI-Revival/gMCPIL/releases) section.
 
 ### Compiling
-To build gMCPIL, you'll need GCC or Clang for the native and `arm-linux-gnueabihf` targets, plus some additional packages.
+To build gMCPIL, you'll need Vala, a C compiler, and some additional packages.
 Assuming a Debian-based distro, you can install them with the following command:
 ```sh
-# For GCC
-sudo apt install gcc build-essential gcc-arm-linux-gnueabihf crossbuild-essential-armhf
+# For Vala + GCC
+sudo apt install gcc valac
 
 # Libraries and other build dependencies
 sudo apt install git make libjson-glib-dev libgtk-3-dev dpkg-dev fakeroot
@@ -49,18 +48,11 @@ After installing the build dependencies, you can clone the repo and build gMCPIL
 git clone https://github.com/MCPI-Revival/gMCPIL
 cd gMCPIL
 
-make # Build gMCPIL and mods
+make # Build gMCPIL
 make pack # Make a Debian package
 ```
 
-You can also set the `DEBUG` and `USE_CLANG` environment variables to add debug symbols to the executable
-and build using Clang instead of GCC, respectively.
-
-## Features
- + Full MCPI-Reborn integration
- + Proxy-free multiplayer
- + Featured servers
- + Coming soon: More stuff
+You can also set the `DEBUG` environment variable to add debug symbols to the executable.
 
 ## Changelog
 See the [CHANGELOG.txt](https://github.com/MCPI-Revival/gMCPIL/blob/master/res/doc/gmcpil/CHANGELOG.txt) file.
