@@ -1,6 +1,6 @@
 <h1 align="center">gMCPIL</h1>
 <p align="center">
-	Simple launcher for Minecraft: Pi Edition and <a href="https://gitea.thebrokenrail.com/TheBrokenRail/minecraft-pi-reborn/">MCPI-Reborn</a> - GTK+ Edition.
+	Simple launcher for Minecraft: Pi Edition and <a href="https://gitea.thebrokenrail.com/TheBrokenRail/minecraft-pi-reborn/">MCPI-Reborn</a> - Vala Edition.
 </p>
 <p align="center">
 	<a href="https://github.com/MCPI-Revival/gMCPIL/blob/master/LICENSE">
