@@ -3,7 +3,7 @@ Version: {{VERSION}}
 Priority: optional
 Architecture: {{ARCH}}
 Section: contrib/misc
-Depends: libc6 (>= 2.28), minecraft-pi-reborn-client (>= 2.1.0), libgtk-3-0, libjson-glib-1.0-0
+Depends: libc6 (>= 2.28), minecraft-pi-reborn-client (>= 2.1.0), libgtk-3-0, libjson-glib-1.0-0, libharfbuzz-gobject0
 Maintainer: Alvarito050506 <donfrutosgomez@gmail.com>
 Homepage: https://mcpirevival.tk
 Vcs-Browser: https://github.com/MCPI-Revival/gMCPIL
