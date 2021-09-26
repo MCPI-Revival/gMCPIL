@@ -57,7 +57,31 @@ namespace GMCPIL
 			"Check out PBPT Anarchy!",
 			"Now without Docker!",
 			"Banana!",
-			"Fancy Vala"
+			"Fancy Vala",
+			"Awesome Community!",
+			"Awesome!",
+			"Minecraft!",
+			"Now in 3D!",
+			"Pretty!",
+			"Singleplayer!",
+			"Survive!",
+			"Try it!",
+			"你好中国",
+			"한국 안녕하세요!",
+			"日本ハロー！",
+			"Привет Россия!",
+			"Γεια σου Ελλάδα!",
+			"Water proof!",
+			"Supercalifragilisticexpialidocious!",
+			"Pixels!",
+			"Now With Multiplayer!",
+			"Keyboard compatible!",
+			"Exploding creepers!",
+			"Enhanced!",
+			"Don't look directly at the bugs!",
+			"Fantasy!",
+			"Create!",
+			"Casual gaming!"
 		};
 		return splashes[Random.int_range(0, splashes.length - 1)];
 	}
