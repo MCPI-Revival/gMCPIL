@@ -30,10 +30,6 @@ else
 VFLAGS+=-X -O3
 endif
 
-ifndef NO_BUSTER_COMPAT
-VFLAGS+=-D BUSTER_COMPAT
-endif
-
 ./build/gmcpil: ./build/ $(SRCS)
 	valac $(VFLAGS) $(SRCS) -o ./build/gmcpil
 ifndef DEBUG
