@@ -1,4 +1,4 @@
-VERSION:=0.13.2
+VERSION:=0.13.3
 SRCS:=$(patsubst %,./src/%.vala,profile config gui play features servers)
 SRCS+=./src/gmcpil.vapi
 

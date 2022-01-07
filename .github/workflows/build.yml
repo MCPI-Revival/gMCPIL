@@ -6,7 +6,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - uses: docker-practice/actions-setup-docker@master
@@ -15,15 +15,15 @@ jobs:
       - name: Build ARM
         run: |
          docker pull arm32v7/buildpack-deps:buster
-         docker run -v $PWD:$PWD -w $PWD --rm arm32v7/buildpack-deps:buster bash ./ci.sh
+         docker run -v $PWD:$PWD -w $PWD --rm arm32v7/buildpack-deps:latest bash ./ci.sh
       - name: Build AArch64
         run: |
          docker pull arm64v8/buildpack-deps:buster
-         docker run -v $PWD:$PWD -w $PWD --rm arm64v8/buildpack-deps:buster bash ./ci.sh
+         docker run -v $PWD:$PWD -w $PWD --rm arm64v8/buildpack-deps:latest bash ./ci.sh
       - name: Build x86_64
         run: |
          docker pull amd64/buildpack-deps:buster
-         docker run -v $PWD:$PWD -w $PWD --rm amd64/buildpack-deps:buster bash ./ci.sh
+         docker run -v $PWD:$PWD -w $PWD --rm amd64/buildpack-deps:latest bash ./ci.sh
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
         with:

@@ -167,28 +167,14 @@ namespace GMCPIL
 
 public static int main(string[] args)
 {
-	bool ubuntu;
 	string home;
 	string path;
-	string os_release;
 	GMCPIL.Config config;
 	GMCPIL.Gui gui;
 	CssProvider provider;
-#if BUSTER_COMPAT
-	try
-	{
-		os_release = GMCPIL.read_file("/etc/os-release");
-		ubuntu = "NAME=\"Ubuntu\"\n" in os_release;
-	} catch (Error err)
-	{
-		ubuntu = false;
-	}
-#else
-	ubuntu = Environment.get_os_info(OsInfoKey.NAME) == "Ubuntu";
-#endif
 
 	Gtk.init(ref args);
-	if (ubuntu)
+	if (Environment.get_os_info(OsInfoKey.NAME) == "Ubuntu")
 	{
 		provider = CssProvider.get_named("Yaru", "dark");
 	} else
@@ -201,7 +187,7 @@ public static int main(string[] args)
 		home = Environment.get_variable("HOME");
 		path = Path.build_filename(home, ".gmcpil.json");
 
-		GMCPIL.Profile.init("/opt/minecraft-pi-reborn-client/available-feature-flags");
+		GMCPIL.Profile.init("/usr/lib/minecraft-pi-reborn-client/available-feature-flags");
 		config = GMCPIL.Config.from_file(path);
 		gui = new GMCPIL.Gui(config);
 		gui.add_tab("Play", GMCPIL.play_tab);
